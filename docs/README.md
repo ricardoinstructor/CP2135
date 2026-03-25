@@ -4,7 +4,7 @@ Aplicación web completa para la preparación del certificado MF0954_2 - Reparac
 
 ## 🌐 Acceso a la Aplicación
 
-**URL:** [https://furichies.github.io/CP2135/]((https://furichies.github.io/CP2135/))
+**URL:** [https://furichies.github.io/CP2135/](https://furichies.github.io/CP2135/)
 
 > ⚠️ **Nota**: Las preguntas han sido verificadas y actualizadas. Aunque se ha realizado un proceso de revisión exhaustivo, pueden existir algunos errores. Si encuentras alguna inconsistencia, por favor repórtala.
 

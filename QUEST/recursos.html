@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos - MF0954_2 Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            background-image: radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .gradient-text {
+            color: #3730a3;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .resource-link {
+            transition: all 0.2s ease;
+        }
+
+        .resource-link:hover {
+            transform: translateX(5px);
+        }
+
+        /* Blobs decorativos */
+        .blob {
+            position: absolute;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .blob-1 {
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 300px;
+            background: #818cf8;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: blob-anim 10s infinite alternate;
+        }
+
+        .blob-2 {
+            bottom: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: #f472b6;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: blob-anim 12s infinite alternate-reverse;
+        }
+
+        @keyframes blob-anim {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(20px, 20px) rotate(10deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <!-- Navigation -->
+    <nav class="glass-panel shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold gradient-text">
+                            <i class="fas fa-microchip mr-2"></i>
+                            CP 24/1475
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html"
+                        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-home mr-1"></i>Inicio
+                    </a>
+                    <a href="estadisticas.html"
+                        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-chart-bar mr-1"></i>Estadísticas
+                    </a>
+                    <a href="#" class="text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-book mr-1"></i>Recursos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold gradient-text mb-4">
+                    Recursos de Aprendizaje
+                </h1>
+                <p class="text-xl text-gray-800">
+                    Material complementario para tu preparación en MF0954_2
+                </p>
+            </div>
+
+            <!-- Quick Access -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-6 text-white card-hover">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Comenzar Test</h3>
+                        <p class="text-blue-100 mb-4">Inicia tu sesión de práctica inmediatamente</p>
+                        <a href="index.html"
+                            class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                            Empezar Ahora
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Ver Estadísticas</h3>
+                    <p class="text-green-100 mb-4">Analiza tu progreso y áreas de mejora</p>
+                    <a href="estadisticas.html"
+                        class="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+                        Ver Progreso
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+            <div class="text-center">
+                <div class="text-4xl mb-4">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Descargar Guía</h3>
+                <p class="text-purple-100 mb-4">Obtén la guía completa en PDF</p>
+                <button onclick="downloadGuide()"
+                    class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors">
+                    Descargar PDF
+                </button>
+            </div>
+        </div>
+        </div>
+
+        <!-- Learning Resources -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Official Documentation -->
+            <div class="glass-panel rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold gradient-text mb-6">
+                    <i class="fas fa-file-alt mr-2"></i>
+                    Documentación Oficial
+                </h2>
+
+                <div class="space-y-4">
+                    <a href="https://sede.sepe.gob.es/especialidadesformativas/RXBuscadorEFRED/DetalleEspecialidad.do?metodo=modulada&codEspecialidad=IFCT0309"
+                        target="_blank"
+                        class="resource-link flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-external-link-alt text-indigo-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">SEPE - Especialidad Formativa</h3>
+                            <p class="text-sm text-gray-800">Información oficial del certificado IFCT0309</p>
+                        </div>
+                    </a>
+
+                    <a href="https://incual.educacion.gob.es/documents/20195/94271/IFC298_2_RV+-+Q_Documento+publicado/9476bd61-79cd-4bda-870a-d338cb7b6029"
+                        target="_blank"
+                        class="resource-link flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-file-pdf text-red-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">INCUAL - Documento Oficial</h3>
+                            <p class="text-sm text-gray-800">Documento de referencia del certificado</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Learning Platforms -->
+            <div class="glass-panel rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold gradient-text mb-6">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    Plataformas de Formación
+                </h2>
+
+                <div class="space-y-4">
+                    <a href="https://cursoscastraining.es/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-graduation-cap text-indigo-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">CAS Training</h3>
+                            <p class="text-sm text-gray-800">Cursos gratuitos para personas trabajadoras y desempleadas
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Resources -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Technical References & Free Software -->
+            <div class="glass-panel rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold gradient-text mb-6">
+                    <i class="fas fa-code-branch mr-2"></i>
+                    Referencias Técnicas y Software Libre
+                </h2>
+
+                <div class="space-y-4">
+                    <a href="https://learn.microsoft.com/es-es/troubleshoot/windows-client/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fab fa-microsoft text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Microsoft Learn - Windows Client</h3>
+                            <p class="text-sm text-gray-800">Base de conocimientos oficial para resolución de problemas
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.fsf.org/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fab fa-linux text-gray-800 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Free Software Foundation</h3>
+                            <p class="text-sm text-gray-800">Promoviendo la libertad de los usuarios de ordenadores</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.kernel.org/doc/html/latest/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-terminal text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Linux Kernel Documentation</h3>
+                            <p class="text-sm text-gray-800">Documentación técnica profunda sobre subsistemas</p>
+                        </div>
+                    </a>
+
+                    <!-- SBCs & Microcontrollers -->
+                    <a href="https://docs.arduino.cc/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-microchip text-teal-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Arduino Docs</h3>
+                            <p class="text-sm text-gray-800">Documentación oficial y tutoriales para Arduino</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.raspberrypi.com/documentation/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fab fa-raspberry-pi text-red-500 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Raspberry Pi Documentation</h3>
+                            <p class="text-sm text-gray-800">Guías oficiales para Raspberry Pi OS y hardware</p>
+                        </div>
+                    </a>
+
+                    <!-- Soporte Fabricantes PC -->
+                    <a href="https://support.hp.com/es-es" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-laptop-medical text-blue-800 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte HP</h3>
+                            <p class="text-sm text-gray-800">Drivers y solución de problemas para equipos HP</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.dell.com/support/home/es-es" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-desktop text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte Dell</h3>
+                            <p class="text-sm text-gray-800">Asistencia técnica y controladores Dell</p>
+                        </div>
+                    </a>
+
+                    <a href="https://es.msi.com/support" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-gamepad text-red-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte MSI</h3>
+                            <p class="text-sm text-gray-800">Descargas y manuales para placas y portátiles MSI</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.asus.com/es/support/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-tools text-gray-700 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte ASUS</h3>
+                            <p class="text-sm text-gray-800">Centro de descargas y soporte técnico ASUS</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.acer.com/es-es/support" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-laptop text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte Acer</h3>
+                            <p class="text-sm text-gray-800">Controladores y manuales Acer</p>
+                        </div>
+                    </a>
+
+                    <!-- Componentes y Reparación -->
+                    <a href="https://www.nvidia.com/es-es/support/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-microchip text-green-500 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte NVIDIA</h3>
+                            <p class="text-sm text-gray-800">Drivers GeForce y soporte técnico</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.crucial.es/support" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-memory text-blue-500 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte Crucial</h3>
+                            <p class="text-sm text-gray-800">Guías de instalación de RAM y SSD</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.seagate.com/es/es/support/" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-hdd text-green-700 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte Seagate</h3>
+                            <p class="text-sm text-gray-800">Ayuda para discos duros y recuperación de datos</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.westerndigital.com/es-es/support" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-server text-blue-900 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Soporte Western Digital</h3>
+                            <p class="text-sm text-gray-800">Descargas y garantía para productos WD</p>
+                        </div>
+                    </a>
+
+                    <a href="https://es.ifixit.com/Guide" target="_blank"
+                        class="resource-link flex items-center p-4 bg-white/50 rounded-lg hover:bg-white/80">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-wrench text-orange-500 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-semibold text-gray-900">Guías de Reparación iFixit</h3>
+                            <p class="text-sm text-gray-800">Manuales paso a paso para reparación de hardware</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+            <!-- Study Tips -->
+            <div class="bg-gradient-to-r from-indigo-600 to-fuchsia-600 rounded-2xl shadow-xl p-8 text-white mb-12">
+                <h2 class="text-2xl font-bold mb-6">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    Consejos de Estudio
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle text-green-300 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Practica Regularmente</h3>
+                                <p class="text-indigo-100 text-sm">Realiza tests frecuentes para reforzar el
+                                    conocimiento</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-clock text-yellow-300 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Gestiona el Tiempo</h3>
+                                <p class="text-indigo-100 text-sm">Practica con límite de tiempo para mejorar velocidad
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-book text-blue-300 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Revisa Fuentes</h3>
+                                <p class="text-indigo-100 text-sm">Consulta las fuentes para respuestas detalladas</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-chart-bar text-purple-300 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Analiza Progreso</h3>
+                                <p class="text-indigo-100 text-sm">Identifica áreas débiles y enfócate en ellas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="glass-panel rounded-2xl shadow-xl p-8 text-center">
+                <h2 class="text-2xl font-bold gradient-text mb-4">
+                    <i class="fas fa-question-circle mr-2"></i>
+                    ¿Necesitas Ayuda?
+                </h2>
+                <p class="text-gray-800 mb-6">
+                    Si tienes dudas sobre el contenido o encuentras errores en las preguntas,
+                    no dudes en contactarnos.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="showContactForm()"
+                        class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-700 transition-colors">
+                        <i class="fas fa-envelope mr-2"></i>Contactar Soporte
+                    </button>
+                    <button onclick="reportError()"
+                        class="bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-pink-700 transition-colors">
+                        <i class="fas fa-bug mr-2"></i>Reportar Error
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-gray-200/50 mt-16">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-gray-800">
+                    © 2024 MF0954_2 Test Application. Desarrollado para la certificación en Montaje de Equipos
+                    Microinformáticos.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="recursos.js"></script>
+</body>
+
+</html>

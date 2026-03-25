@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partes de una Impresora 3D</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuración de la fuente Inter y fondo */
+        html { font-family: 'Inter', sans-serif; }
+        .bg-page {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .dark .bg-page {
+            background-color: #1f2937;
+            color: #f3f4f6;
+        }
+
+        /* Estilos para las partes del SVG */
+        .svg-part {
+            transition: fill 0.3s ease, stroke 0.3s ease;
+            cursor: pointer;
+            stroke-width: 2px;
+            stroke: #4b5563; /* Gris oscuro para bordes */
+            fill: #d1d5db; /* Gris claro por defecto */
+        }
+        .svg-part:hover {
+            fill: #9ca3af; /* Gris un poco más oscuro al pasar el ratón */
+        }
+        .svg-part.active {
+            fill: #10b981; /* Esmeralda para el activo */
+            stroke: #059669; /* Verde más oscuro para el borde */
+        }
+        /* Estilo para asegurar la visibilidad del texto de descripción */
+        #descripcion-display {
+            color: #4b5563; /* Gris oscuro para el texto de utilidad */
+        }
+        .dark #descripcion-display {
+            color: #d1d5db; /* Gris claro en modo oscuro */
+        }
+    </style>
+</head>
+<body class="bg-page min-h-screen p-4 md:p-8">
+
+    <script>
+        // Definición de las partes y sus utilidades en español
+        const partesImpresora = {
+            'Motores': 'Dispositivos que mueven los ejes (X, Y, Z) de la impresora y empujan el material. Suelen ser motores paso a paso (stepper motors) para un control de posición preciso.',
+            'Cama': 'La superficie donde se deposita la primera capa del material y sobre la cual se construye la pieza. Suele ser calefactada para mejorar la adhesión y prevenir deformaciones.',
+            'Controlador': 'El "cerebro" de la impresora. Es una placa electrónica que interpreta el código G (G-code) y gestiona todos los componentes, como motores, temperaturas y sensores. (Ubicación conceptual)',
+            'Display': 'La interfaz de usuario que permite al operador interactuar con la impresora: seleccionar archivos, controlar la temperatura y monitorear el progreso.',
+            'Husillo': 'Un tornillo de precisión que convierte el movimiento de rotación del motor en movimiento lineal, generalmente utilizado para subir y bajar el eje Z (altura).',
+            'Extrusor': 'El mecanismo encargado de empujar el filamento desde la bobina hacia el fusor. Consta de un motor y unos engranajes o ruedas dentadas.',
+            'Fusor': 'El conjunto de componentes (Hotend) responsable de calentar el material (filamento) hasta su temperatura de fusión, permitiendo que fluya.',
+            'Boquilla': 'La punta del fusor, con una pequeña abertura (típicamente 0.4 mm), por donde el material fundido es depositado con precisión, capa por capa.',
+            'Chasis': 'La estructura o esqueleto de la impresora. Proporciona rigidez y estabilidad al sistema.',
+            'Material': 'La materia prima utilizada para la impresión 3D, generalmente plásticos termoplásticos (como PLA, ABS, PETG) que vienen en forma de filamento.'
+        };
+
+        function mostrarUtilidad(nombreParte, svgElement) {
+            const descripcion = partesImpresora[nombreParte];
+            const display = document.getElementById('descripcion-display');
+            const titulo = document.getElementById('descripcion-titulo');
+            
+            // 1. Quitar la clase 'active' de todos los elementos SVG
+            const partes = document.querySelectorAll('.svg-part');
+            partes.forEach(part => part.classList.remove('active'));
+
+            // 2. Añadir la clase 'active' al elemento clickeado (si existe)
+            if (svgElement) {
+                // Si se llama desde un clic, 'svgElement' es el elemento SVG
+                svgElement.classList.add('active');
+            } else {
+                 // Si se llama desde DOMContentLoaded, buscar el elemento por ID
+                const initialElement = document.getElementById(nombreParte);
+                if (initialElement) {
+                    initialElement.classList.add('active');
+                }
+            }
+
+            // 3. Actualizar el contenido del panel de descripción
+            titulo.textContent = nombreParte;
+            display.textContent = descripcion;
+            // Quitamos las clases de opacidad ya que no son necesarias aquí y pueden ocultar el texto
+            // display.classList.remove('opacity-0');
+            // display.classList.add('opacity-100');
+        }
+
+        // Función de inicialización para el primer clic al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mostrar la descripción de la primera parte al cargar la página
+            mostrarUtilidad('Fusor'); // Iniciamos mostrando la parte más central
+        });
+    </script>
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-teal-600 mb-2">Diagrama Interactivo de una Impresora 3D</h1>
+            <p class="text-xl text-gray-500">Haz clic sobre cualquier parte del diagrama para ver su función.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            
+            <!-- Columna 1-3: Diagrama SVG de la Impresora 3D -->
+            <div class="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl flex justify-center items-center">
+                <h2 class="sr-only">Diagrama Interactivo de Impresora 3D</h2>
+                
+                <svg viewBox="0 0 400 300" class="w-full max-w-lg h-auto">
+                    <!-- Base (Chasis) -->
+                    <rect id="Chasis" x="20" y="270" width="360" height="20" rx="5" class="svg-part fill-gray-600 stroke-gray-700" onclick="mostrarUtilidad('Chasis', this)" />
+                    <rect x="20" y="20" width="20" height="250" rx="3" class="svg-part fill-gray-600 stroke-gray-700" onclick="mostrarUtilidad('Chasis', this)" />
+                    <rect x="360" y="20" width="20" height="250" rx="3" class="svg-part fill-gray-600 stroke-gray-700" onclick="mostrarUtilidad('Chasis', this)" />
+                    
+                    <!-- Cama Caliente (Build Plate) -->
+                    <rect id="Cama" x="40" y="230" width="320" height="30" rx="3" class="svg-part fill-amber-300 stroke-amber-500" onclick="mostrarUtilidad('Cama', this)" />
+                    
+                    <!-- Eje X - Guía Superior (Chasis) -->
+                    <rect x="40" y="40" width="320" height="10" rx="5" class="svg-part" onclick="mostrarUtilidad('Chasis', this)" />
+
+                    <!-- Husillo (Eje Z) - Conceptual en la parte trasera -->
+                    <rect id="Husillo" x="370" y="60" width="5" height="170" rx="2" class="svg-part fill-sky-500 stroke-sky-700" onclick="mostrarUtilidad('Husillo', this)" />
+                    
+                    <!-- Motores - Ubicaciones conceptuales -->
+                    <circle id="Motores" cx="30" cy="275" r="8" class="svg-part fill-red-500 stroke-red-700" onclick="mostrarUtilidad('Motores', this)" /> <!-- Motor Y -->
+                    <circle cx="370" cy="275" r="8" class="svg-part fill-red-500 stroke-red-700" onclick="mostrarUtilidad('Motores', this)" /> <!-- Motor X -->
+                    <circle cx="370" cy="30" r="8" class="svg-part fill-red-500 stroke-red-700" onclick="mostrarUtilidad('Motores', this)" /> <!-- Motor Z -->
+
+                    <!-- Extrusor (Mecanismo que empuja el filamento) - Conceptual en la parte superior -->
+                    <rect id="Extrusor" x="160" y="5" width="80" height="30" rx="5" class="svg-part fill-indigo-400 stroke-indigo-600" onclick="mostrarUtilidad('Extrusor', this)" />
+                    
+                    <!-- Filamento (Material) -->
+                    <path id="Material" d="M 200 5 L 200 35 L 185 35 A 10 10 0 0 0 175 25 L 175 5" class="svg-part fill-yellow-400 stroke-yellow-600" onclick="mostrarUtilidad('Material', this)" />
+                    <circle cx="170" cy="15" r="15" class="svg-part fill-yellow-200 stroke-yellow-400" onclick="mostrarUtilidad('Material', this)" />
+
+                    <!-- Carro del Eje X (Gantry) -->
+                    <rect x="150" y="50" width="100" height="30" rx="3" class="svg-part fill-blue-400 stroke-blue-600" onclick="mostrarUtilidad('Motores', this)" />
+                    
+                    <!-- Fusor (Hotend) - Bloque de calor -->
+                    <rect id="Fusor" x="175" y="80" width="50" height="40" rx="3" class="svg-part fill-orange-500 stroke-orange-700" onclick="mostrarUtilidad('Fusor', this)" />
+                    
+                    <!-- Boquilla (Nozzle) -->
+                    <path id="Boquilla" d="M 200 120 L 195 140 L 205 140 Z" class="svg-part fill-gray-800 stroke-black" onclick="mostrarUtilidad('Boquilla', this)" />
+                    
+                    <!-- Display - Conceptual en la parte frontal inferior -->
+                    <rect id="Display" x="40" y="275" width="70" height="15" rx="3" class="svg-part fill-cyan-400 stroke-cyan-600" onclick="mostrarUtilidad('Display', this)" />
+                    
+                    <!-- Controlador - Conceptual, escondido en la base -->
+                    <rect id="Controlador" x="120" y="275" width="70" height="10" rx="3" class="svg-part fill-purple-500 stroke-purple-700" onclick="mostrarUtilidad('Controlador', this)" />
+                    
+                    <!-- Leyenda para referencia visual -->
+                    <text x="200" y="210" text-anchor="middle" font-size="14" fill="#6b7280" font-weight="bold">Área de Impresión</text>
+                </svg>
+
+            </div>
+            
+            <!-- Columna 4-5: Panel de Descripción -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Panel de Descripción -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl h-full flex flex-col justify-start">
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-700">Función del Componente</h2>
+                    <h3 id="descripcion-titulo" class="text-4xl font-extrabold text-teal-500 mb-4 transition-all duration-300"></h3>
+                    <p id="descripcion-display" class="text-xl leading-relaxed"></p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

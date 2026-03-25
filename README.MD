@@ -1,3 +1,5 @@
+Aquí tienes el contenido para el fichero `README.md` desarrollado específicamente para el Módulo 3 del curso.
+
 ```markdown
 # Curso de Certificación Profesional 25/2135
 

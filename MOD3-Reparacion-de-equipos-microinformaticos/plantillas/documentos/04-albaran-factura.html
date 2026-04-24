@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroInfo - Albarán de Entrega y Factura</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#e8f0fe;color:#1a2332;padding:20px;min-height:100vh}
+        .container{max-width:900px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(30,78,160,.15);overflow:hidden}
+        .header{background:linear-gradient(135deg,#1a4789 0%,#2563a8 50%,#3b82c4 100%);color:#fff;padding:28px 36px;display:flex;justify-content:space-between;align-items:center;position:relative}
+        .header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)}
+        .header-left h1{font-size:28px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+        .header-left p{font-size:13px;opacity:.9;line-height:1.5}
+        .header-right{text-align:right;font-size:13px;line-height:1.7;opacity:.95}
+        .header-right strong{display:block;font-size:15px;opacity:1}
+        .badge-entrega{display:inline-block;background:rgba(34,197,94,.2);border:1px solid #22c55e;color:#86efac;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-top:4px}
+        .document-title{text-align:center;padding:18px 36px;background:#f0f5fc;border-bottom:2px solid #d4e2f7}
+        .document-title h2{font-size:20px;color:#1a4789;font-weight:600;letter-spacing:.5px}
+        .document-title p{font-size:13px;color:#5a7ba8;margin-top:4px}
+        .form-body{padding:30px 36px 40px}
+        .section{margin-bottom:26px;border:1.5px solid #c8daf0;border-radius:8px;overflow:hidden}
+        .section-header{background:linear-gradient(135deg,#1e4d92,#2a6bc4);color:#fff;padding:10px 18px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;letter-spacing:.3px}
+        .section-header .icon{font-size:16px}
+        .section-header.green{background:linear-gradient(135deg,#166534,#22c55e)}
+        .section-header.amber{background:linear-gradient(135deg,#92400e,#d97706)}
+        .section-body{padding:18px;background:#fafcff}
+        .form-row{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+        .form-row:last-child{margin-bottom:0}
+        .form-group{flex:1;min-width:200px}
+        .form-group.full-width{flex:100%}
+        .form-group.half-width{flex:0 0 calc(50% - 8px)}
+        .form-group.third-width{flex:0 0 calc(33.333% - 11px)}
+        .form-group label{display:block;font-size:12px;font-weight:600;color:#3a5a8c;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 12px;border:1.5px solid #c8daf0;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;color:#1a2332;background:#fff;transition:border-color .2s,box-shadow .2s}
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:#2563a8;box-shadow:0 0 0 3px rgba(37,99,168,.12)}
+        .form-group textarea{resize:vertical;min-height:80px}
+        .budget-table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;border:1.5px solid #c8daf0}
+        .budget-table thead th{background:linear-gradient(135deg,#1e4d92,#2563a8);color:#fff;padding:10px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;text-align:left}
+        .budget-table tbody td{padding:8px 10px;border-bottom:1px solid #e8f0fe;font-size:13px}
+        .budget-table tbody tr:last-child td{border-bottom:none}
+        .budget-table tbody tr:hover{background:#f5f8fc}
+        .budget-table input,.budget-table select{width:100%;padding:6px 8px;border:1.5px solid #d4e2f7;border-radius:5px;font-size:13px;font-family:'Inter',sans-serif;color:#1a2332;background:#f8fafd}
+        .budget-table input:focus,.budget-table select:focus{outline:none;border-color:#2563a8;background:#fff}
+        .budget-table .col-concept{width:35%}.budget-table .col-type{width:14%}.budget-table .col-qty{width:10%}.budget-table .col-price{width:13%}.budget-table .col-total{width:15%}.budget-table .col-action{width:13%}
+        .budget-table .row-total-line td{background:#f0f5fc;font-weight:600;padding:10px 12px;font-size:13px}
+        .budget-table .row-grand-total td{background:linear-gradient(135deg,#1e4d92,#2563a8);color:#fff;font-weight:700;padding:12px;font-size:15px}
+        .work-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border:1.5px solid #c8daf0;border-radius:6px;margin-bottom:8px}
+        .work-item .work-num{background:linear-gradient(135deg,#1e4d92,#2563a8);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+        .work-item input,.work-item textarea{width:100%;padding:7px 10px;border:1.5px solid #d4e2f7;border-radius:5px;font-size:13px;font-family:'Inter',sans-serif;background:#f8fafd}
+        .work-item textarea{resize:vertical;min-height:40px}
+        .work-item input:focus,.work-item textarea:focus{outline:none;border-color:#2563a8}
+        .add-work-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:#f0f5fc;border:2px dashed #b0c8e8;border-radius:8px;font-size:13px;font-weight:600;color:#1e4d92;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+        .add-work-btn:hover{background:#e0ecfb;border-color:#2563a8}
+        .remove-btn-sm{background:rgba(220,38,38,.1);color:#dc2626;border:1.5px solid rgba(220,38,38,.3);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .2s;flex-shrink:0}
+        .remove-btn-sm:hover{background:#dc2626;color:#fff;border-color:#dc2626}
+        .conditions-box{background:#fff8e1;border:1.5px solid #fbbf24;border-radius:8px;padding:16px;margin-top:16px}
+        .conditions-box h4{color:#92400e;font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.3px}
+        .conditions-box ul{list-style:none;padding:0;margin:0}
+        .conditions-box ul li{font-size:12px;color:#78350f;padding:3px 0 3px 18px;position:relative;line-height:1.5}
+        .conditions-box ul li::before{content:'⚠';position:absolute;left:0;font-size:11px}
+        .acceptance-check{margin-top:14px;padding:12px 14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;display:flex;align-items:center;gap:10px}
+        .acceptance-check input[type="checkbox"]{width:20px;height:20px;accent-color:#2563a8;flex-shrink:0}
+        .acceptance-check label{font-size:13px;color:#166534;font-weight:500;cursor:pointer}
+        .images-section .section-body{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+        .image-slot{width:190px;height:150px;border:2px dashed #b0c8e8;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:#f5f8fc;transition:all .2s;position:relative;overflow:hidden}
+        .image-slot:hover{border-color:#2563a8;background:#edf3fc}
+        .image-slot.has-image{border-style:solid;border-color:#2563a8;background:#fff}
+        .image-slot .placeholder-icon{font-size:32px;color:#8baad4;margin-bottom:4px}
+        .image-slot .placeholder-text{font-size:11px;color:#8baad4;text-align:center;padding:0 8px}
+        .image-slot img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+        .image-slot .remove-img-btn{position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2}
+        .signatures-row{display:flex;gap:30px;margin-top:10px}
+        .signature-box{flex:1}
+        .signature-box label{display:block;font-size:12px;font-weight:600;color:#3a5a8c;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+        .signature-canvas-wrapper{border:1.5px solid #c8daf0;border-radius:8px;background:#fff;position:relative;cursor:crosshair;overflow:hidden}
+        .signature-canvas-wrapper canvas{display:block;width:100%;height:120px}
+        .clear-sig-btn{position:absolute;top:6px;right:6px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;z-index:1}
+        .clear-sig-btn:hover{background:rgba(185,28,28,1)}
+        .receipt-number{display:inline-block;background:#e8f0fe;padding:2px 10px;border-radius:4px;font-size:13px;color:#1a4789;font-weight:600}
+        .footer-actions{padding:20px 36px 30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+        .btn{padding:12px 28px;border:none;border-radius:8px;font-size:15px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px}
+        .btn-primary{background:linear-gradient(135deg,#1a4789,#2563a8);color:#fff;box-shadow:0 3px 12px rgba(26,71,137,.3)}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(26,71,137,.4)}
+        .btn-secondary{background:#fff;color:#1a4789;border:1.5px solid #1a4789}
+        .btn-secondary:hover{background:#f0f5fc}
+        .btn-danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;box-shadow:0 3px 12px rgba(220,38,38,.25)}
+        .btn-danger:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(220,38,38,.35)}
+        .loading-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(26,71,137,.7);z-index:1000;justify-content:center;align-items:center;flex-direction:column;gap:16px}
+        .loading-overlay.active{display:flex}
+        .spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-text{color:#fff;font-size:16px;font-weight:500}
+        .hidden-input{display:none}
+        .remove-line-btn{background:rgba(220,38,38,.1);color:#dc2626;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .remove-line-btn:hover{background:#dc2626;color:#fff}
+        .add-line-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:#f0f5fc;border:2px dashed #b0c8e8;border-radius:8px;font-size:13px;font-weight:600;color:#1e4d92;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-top:8px}
+        .add-line-btn:hover{background:#e0ecfb;border-color:#2563a8}
+        .page-separator{border:none;border-top:4px dashed #1a4789;margin:10px 0;position:relative}
+        .page-separator::after{content:'▼  PÁGINA 2: FACTURA  ▼';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#1a4789;color:#fff;padding:4px 16px;border-radius:12px;font-size:12px;font-weight:700;letter-spacing:1px;white-space:nowrap}
+        .invoice-page-header{background:linear-gradient(135deg,#1a4789 0%,#2563a8 100%);color:#fff;padding:16px 24px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+        .invoice-page-header h3{font-size:20px;font-weight:700}
+        .invoice-page-header .inv-badge{background:rgba(245,158,11,.2);border:1px solid #f59e0b;color:#fbbf24;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700}
+        .invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+        .inv-box{padding:14px;background:#f0f5fc;border-radius:8px;border:1px solid #c8daf0}
+        .inv-box h4{font-size:11px;text-transform:uppercase;color:#3a5a8c;margin-bottom:8px;letter-spacing:.5px;font-weight:700}
+        .inv-box p{font-size:13px;line-height:1.6;color:#1a2332}
+        .inv-total-row{display:flex;justify-content:flex-end;gap:16px;margin-top:16px}
+        .inv-total-item{padding:10px 18px;border-radius:8px;text-align:right}
+        .inv-total-item.sub{background:#f0f5fc}
+        .inv-total-item.iva{background:#f0f5fc}
+        .inv-total-item.grand{background:linear-gradient(135deg,#1e4d92,#2563a8);color:#fff}
+        .inv-total-item .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;opacity:.8}
+        .inv-total-item .val{font-size:18px;font-weight:700;margin-top:2px}
+        .payment-box{background:#f0f5fc;border:1.5px solid #c8daf0;border-radius:8px;padding:14px;margin-top:16px}
+        .payment-box h4{font-size:13px;color:#1a4789;font-weight:700;margin-bottom:6px}
+        .invoice-note{margin-top:16px;padding:12px;background:#f0f5fc;border-radius:8px;border:1px solid #c8daf0;font-size:12px;color:#5a7ba8;line-height:1.5}
+        @media(max-width:768px){
+            body{padding:10px}
+            .header{flex-direction:column;text-align:center;gap:12px;padding:20px}
+            .header-right{text-align:center}
+            .form-body{padding:20px 16px 30px}
+            .form-row{flex-direction:column}
+            .form-group,.form-group.half-width,.form-group.third-width{min-width:100%;flex:100%}
+            .signatures-row{flex-direction:column}
+            .image-slot{width:calc(50% - 10px)}
+            .footer-actions{padding:16px;flex-direction:column}
+            .btn{justify-content:center}
+            .invoice-grid{grid-template-columns:1fr}
+            .inv-total-row{flex-direction:column;align-items:flex-end}
+        }
+        @media print{
+            body{background:#fff;padding:0}
+            .container{box-shadow:none;border-radius:0}
+            .footer-actions{display:none!important}
+            .clear-sig-btn,.remove-img-btn,.remove-btn-sm,.remove-line-btn,.add-work-btn,.add-line-btn{display:none!important}
+        }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Generando PDF (Albarán + Factura)...</div>
+</div>
+
+<div class="container" id="documentContainer">
+
+    <!-- ===================== PÁGINA 1: ALBARÁN DE ENTREGA ===================== -->
+    <div id="albaranPage">
+        <div class="header">
+            <div class="header-left">
+                <h1>⚙ MicroInfo</h1>
+                <p>Calle de los electrones 77, 28033 Madrid</p>
+                <p>CIF: 541234156</p>
+            </div>
+            <div class="header-right">
+                <strong>Albarán de Entrega</strong>
+                <span class="badge-entrega">✅ EQUIPO ENTREGADO</span><br>
+                <span>Fecha: <span id="deliveryDate"></span></span><br>
+                <span>Nº Albarán: <span id="albaranNum" class="receipt-number"></span></span>
+            </div>
+        </div>
+
+        <div class="document-title">
+            <h2>📦 Albarán de Entrega de Equipo Informático</h2>
+            <p>Documento de conformidad de entrega del equipo reparado</p>
+        </div>
+
+        <div class="form-body">
+            <div class="section">
+                <div class="section-header"><span class="icon">🔗</span> Referencias del Servicio</div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group"><label>Nº Recepción</label><input type="text" id="refRecepcion" placeholder="REC-XXXX"></div>
+                        <div class="form-group"><label>Nº Presupuesto</label><input type="text" id="refPresupuesto" placeholder="DIA-XXXX"></div>
+                        <div class="form-group"><label>Nº Ampliación</label><input type="text" id="refAmpliacion" placeholder="AMP-XXXX"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span class="icon">👤</span> Datos del Cliente</div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2"><label>Nombre / Razón Social</label><input type="text" id="clientName" value="Comunidad de Madrid Alcobendas" placeholder="Nombre del cliente"></div>
+                        <div class="form-group"><label>Teléfono</label><input type="tel" id="clientPhone" value="+34 612341567" placeholder="Teléfono"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width"><label>Dirección</label><input type="text" id="clientAddress" value="Camino de Alcobendas 118 292 Alcobendas Madrid" placeholder="Dirección completa"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email</label><input type="email" id="clientEmail" placeholder="correo@ejemplo.com"></div>
+                        <div class="form-group"><label>NIF / CIF</label><input type="text" id="clientNIF" placeholder="NIF o CIF"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span class="icon">📅</span> Datos de la Entrega</div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group"><label>Fecha de Entrega</label><input type="date" id="entryDate"></div>
+                        <div class="form-group"><label>Hora de Entrega</label><input type="time" id="entryTime"></div>
+                        <div class="form-group"><label>Técnico que Entrega</label><input type="text" id="techName" placeholder="Nombre del técnico"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Estado del Equipo</label>
+                            <select id="equipStatus">
+                                <option value="reparado">✅ Reparado y funcionando</option>
+                                <option value="parcialmente">⚠️ Reparado parcialmente</option>
+                                <option value="no_reparable">❌ No reparable</option>
+                                <option value="sustituido">🔄 Sustituido</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Garantía Aplicada</label>
+                            <select id="warrantyType">
+                                <option value="3_meses">3 meses</option>
+                                <option value="6_meses">6 meses</option>
+                                <option value="12_meses">12 meses</option>
+                                <option value="no_garantia">Sin garantía</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span class="icon">💻</span> Datos del Equipo Entregado</div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group"><label>Marca</label><input type="text" id="equipBrand" placeholder="HP, Dell, Lenovo..."></div>
+                        <div class="form-group"><label>Modelo</label><input type="text" id="equipModel" placeholder="Modelo"></div>
+                        <div class="form-group"><label>Nº Serie (S/N)</label><input type="text" id="equipSN" placeholder="Número de serie"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo de Equipo</label>
+                            <select id="equipType">
+                                <option value="sobremesa">Sobremesa</option>
+                                <option value="portatil">Portátil</option>
+                                <option value="tablet">Tablet</option>
+                                <option value="impresora">Impresora</option>
+                                <option value="servidor">Servidor</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Color</label><input type="text" id="equipColor" placeholder="Color del equipo"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width"><label>Accesorios Devueltos</label><textarea id="equipAccessories" placeholder="Cargador, cable, maletín, ratón, etc."></textarea></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header green"><span class="icon">🔧</span> Trabajos Realizados</div>
+                <div class="section-body">
+                    <div id="worksContainer"></div>
+                    <button class="add-work-btn" onclick="addWork()"><span style="font-size:16px">＋</span> Añadir Trabajo Realizado</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header green"><span class="icon">🔩</span> Piezas Sustituidas / Utilizadas</div>
+                <div class="section-body">
+                    <table class="budget-table" id="partsTable">
+                        <thead><tr>
+                            <th class="col-concept">Pieza / Componente</th>
+                            <th class="col-type">Estado</th>
+                            <th class="col-qty">Cant.</th>
+                            <th class="col-price">Precio Unit.</th>
+                            <th class="col-total">Total</th>
+                            <th class="col-action"></th>
+                        </tr></thead>
+                        <tbody id="partsBody"></tbody>
+                    </table>
+                    <button class="add-line-btn" onclick="addPart()"><span style="font-size:16px">＋</span> Añadir Pieza</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span class="icon">📝</span> Observaciones de Entrega</div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group full-width"><label>Observaciones</label><textarea id="deliveryObs" placeholder="Indicaciones para el cliente, recomendaciones, notas sobre el equipo entregado..."></textarea></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conditions-box">
+                <h4>📋 Condiciones de Entrega</h4>
+                <ul>
+                    <li>El cliente declara recibir el equipo descrito en este albarán en las condiciones indicadas.</li>
+                    <li>La garantía cubre exclusivamente la reparación o sustitución realizada.</li>
+                    <li>La garantía no cubre daños por mal uso, golpes, líquidos ni manipulaciones por terceros.</li>
+                    <li>El plazo de garantía comienza a contar desde la fecha de entrega.</li>
+                    <li>Transcurridos 30 días desde la notificación sin recoger el equipo, se generarán gastos de almacenamiento.</li>
+                </ul>
+            </div>
+
+            <div class="acceptance-check">
+                <input type="checkbox" id="acceptCheck">
+                <label for="acceptCheck">Declaro haber recibido el equipo descrito en este albarán en las condiciones indicadas y acepto los términos de la garantía.</label>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span class="icon">✍️</span> Firmas de Conformidad</div>
+                <div class="section-body">
+                    <div class="signatures-row">
+                        <div class="signature-box">
+                            <label>Firma del Técnico</label>
+                            <div class="signature-canvas-wrapper">
+                                <button class="clear-sig-btn" onclick="clearSignature('sigTech')">✕</button>
+                                <canvas id="sigTech"></canvas>
+                            </div>
+                            <input type="text" id="techSignerName" placeholder="Nombre del técnico" style="margin-top:8px">
+                        </div>
+                        <div class="signature-box">
+                            <label>Firma del Cliente (Conforme Entrega)</label>
+                            <div class="signature-canvas-wrapper">
+                                <button class="clear-sig-btn" onclick="clearSignature('sigClient')">✕</button>
+                                <canvas id="sigClient"></canvas>
+                            </div>
+                            <input type="text" id="clientSignerName" placeholder="Nombre del cliente" style="margin-top:8px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section images-section">
+                <div class="section-header"><span class="icon">📷</span> Imágenes del Equipo en Entrega</div>
+                <div class="section-body">
+                    <div class="image-slot" id="slot0" onclick="triggerUpload(0)"><span class="placeholder-icon">📷</span><span class="placeholder-text">Click para subir imagen 1</span></div>
+                    <div class="image-slot" id="slot1" onclick="triggerUpload(1)"><span class="placeholder-icon">📷</span><span class="placeholder-text">Click para subir imagen 2</span></div>
+                    <div class="image-slot" id="slot2" onclick="triggerUpload(2)"><span class="placeholder-icon">📷</span><span class="placeholder-text">Click para subir imagen 3</span></div>
+                    <div class="image-slot" id="slot3" onclick="triggerUpload(3)"><span class="placeholder-icon">📷</span><span class="placeholder-text">Click para subir imagen 4</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== SEPARADOR DE PÁGINA ===================== -->
+    <hr class="page-separator" id="pageSeparator">
+
+    <!-- ===================== PÁGINA 2: FACTURA ===================== -->
+    <div id="invoicePage">
+        <div class="form-body">
+            <div class="invoice-page-header">
+                <div>
+                    <h3>⚙ MicroInfo — Factura</h3>
+                    <p style="font-size:12px;opacity:.85;margin-top:4px">Calle de los electrones 77, 28033 Madrid · CIF: 541234156</p>
+                </div>
+                <div class="inv-badge">FACTURA</div>
+            </div>
+
+            <div class="invoice-grid">
+                <div class="inv-box">
+                    <h4>👤 Datos del Cliente</h4>
+                    <p><strong id="invClientName">Comunidad de Madrid Alcobendas</strong></p>
+                    <p id="invClientAddress">Camino de Alcobendas 118 292 Alcobendas Madrid</p>
+                    <p id="invClientNIF"></p>
+                    <p id="invClientPhone">+34 612341567</p>
+                </div>
+                <div class="inv-box">
+                    <h4>📄 Datos de la Factura</h4>
+                    <p><strong>Nº Factura:</strong> <span id="invoiceNum"></span></p>
+                    <p><strong>Fecha:</strong> <span id="invoiceDate"></span></p>
+                    <p><strong>Nº Albarán:</strong> <span id="invAlbaranRef"></span></p>
+                    <p><strong>Recepción:</strong> <span id="invRefRecepcion"></span></p>
+                </div>
+            </div>
+
+            <table class="budget-table" id="invoiceTable">
+                <thead><tr>
+                    <th class="col-concept">Concepto</th>
+                    <th class="col-type">Tipo</th>
+                    <th class="col-qty">Cant.</th>
+                    <th class="col-price">Precio Unit.</th>
+                    <th class="col-total">Total</th>
+                </tr></thead>
+                <tbody id="invoiceBody"></tbody>
+            </table>
+            <button class="add-line-btn" onclick="addInvoiceLine()"><span style="font-size:16px">＋</span> Añadir Línea a Factura</button>
+
+            <div class="inv-total-row">
+                <div class="inv-total-item sub">
+                    <div class="lbl">Base Imponible</div>
+                    <div class="val" id="invBase">0,00 €</div>
+                </div>
+                <div class="inv-total-item iva">
+                    <div class="lbl">IVA (21%)</div>
+                    <div class="val" id="invIva">0,00 €</div>
+                </div>
+                <div class="inv-total-item grand">
+                    <div class="lbl">TOTAL FACTURA</div>
+                    <div class="val" id="invTotal">0,00 €</div>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top:16px">
+                <div class="form-group"><label>Forma de Pago</label>
+                    <select id="payMethod">
+                        <option value="efectivo">Efectivo</option>
+                        <option value="tarjeta">Tarjeta de crédito/débito</option>
+                        <option value="transferencia">Transferencia bancaria</option>
+                        <option value="bizum">Bizum</option>
+                        <option value="pendiente">Pendiente de pago</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Fecha de Vencimiento</label><input type="date" id="dueDate"></div>
+            </div>
+
+            <div class="payment-box">
+                <h4>🏦 Datos Bancarios para Transferencia</h4>
+                <p style="font-size:13px;line-height:1.6"><strong>Titular:</strong> MicroInfo S.L.<br><strong>IBAN:</strong> ES00 0000 0000 0000 0000 0000<br><strong>Banco:</strong> Banco Nacional de España<br><strong>Concepto:</strong> Factura <span id="invRefPayment"></span></p>
+            </div>
+
+            <div class="invoice-note">
+                <strong>Condiciones:</strong> La presente factura tiene validez fiscal. El IVA está incluido según la legislación vigente. En caso de discrepancia, contacte con MicroInfo en un plazo de 7 días. La garantía sobre las reparaciones realizadas es de 3 meses desde la fecha de entrega, salvo indicación expresa contraria.
+            </div>
+
+            <div class="signatures-row" style="margin-top:24px">
+                <div class="signature-box">
+                    <label>Sello y Firma de MicroInfo</label>
+                    <div class="signature-canvas-wrapper">
+                        <button class="clear-sig-btn" onclick="clearSignature('sigInvTech')">✕</button>
+                        <canvas id="sigInvTech"></canvas>
+                    </div>
+                </div>
+                <div class="signature-box">
+                    <label>Firma del Cliente (Recibí conforme)</label>
+                    <div class="signature-canvas-wrapper">
+                        <button class="clear-sig-btn" onclick="clearSignature('sigInvClient')">✕</button>
+                        <canvas id="sigInvClient"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions" id="footerActions">
+        <button class="btn btn-primary" onclick="generatePDF()"><span>📄</span> Generar PDF (Albarán + Factura)</button>
+        <button class="btn btn-secondary" onclick="syncInvoice()"><span>🔄</span> Sincronizar Factura</button>
+        <button class="btn btn-secondary" onclick="resetForm()"><span>📋</span> Nuevo Documento</button>
+        <button class="btn btn-danger" onclick="clearAllSignatures()"><span>🗑️</span> Limpiar Firmas</button>
+    </div>
+</div>
+
+<input type="file" id="fileInput0" class="hidden-input" accept="image/*" onchange="handleImage(event,0)">
+<input type="file" id="fileInput1" class="hidden-input" accept="image/*" onchange="handleImage(event,1)">
+<input type="file" id="fileInput2" class="hidden-input" accept="image/*" onchange="handleImage(event,2)">
+<input type="file" id="fileInput3" class="hidden-input" accept="image/*" onchange="handleImage(event,3)">
+
+<script>
+// ======================== INICIALIZACIÓN ========================
+var now = new Date();
+var dateStr = now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+document.getElementById('deliveryDate').textContent = dateStr;
+document.getElementById('invoiceDate').textContent = dateStr;
+document.getElementById('entryDate').value = now.toISOString().split('T')[0];
+
+var albaranNum = 'ALB-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*9000)+1000);
+document.getElementById('albaranNum').textContent = albaranNum;
+document.getElementById('invAlbaranRef').textContent = albaranNum;
+document.getElementById('invRefPayment').textContent = albaranNum;
+
+var invoiceNum = 'FAC-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*9000)+1000);
+document.getElementById('invoiceNum').textContent = invoiceNum;
+
+var due = new Date(now);
+due.setDate(due.getDate() + 30);
+document.getElementById('dueDate').value = due.toISOString().split('T')[0];
+
+// ======================== TRABAJOS REALIZADOS ========================
+var workCnt = 0;
+function addWork(d){
+    workCnt++;
+    var idx = workCnt;
+    var c = document.getElementById('worksContainer');
+    var dv = document.createElement('div');
+    dv.className = 'work-item';
+    dv.id = 'w' + idx;
+    dv.innerHTML = '<div class="work-num">' + idx + '</div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><input type="text" class="work-title" placeholder="Descripción del trabajo" value="' + (d ? d.title : '') + '"><textarea class="work-detail" placeholder="Detalle...">' + (d ? d.detail : '') + '</textarea></div><button class="remove-btn-sm" onclick="remWork(\'w' + idx + '\')">✕</button>';
+    c.appendChild(dv);
+    renWorks();
+}
+function remWork(id){ document.getElementById(id)?.remove(); renWorks(); }
+function renWorks(){ document.querySelectorAll('#worksContainer .work-item').forEach(function(s, i){ s.querySelector('.work-num').textContent = i + 1; }); }
+
+addWork({title: 'Diagnóstico y reparación del equipo', detail: ''});
+addWork({title: 'Sustitución de componentes defectuosos', detail: ''});
+addWork({title: 'Verificación y test de funcionamiento', detail: ''});
+
+// ======================== PIEZAS SUSTITUIDAS ========================
+var partCnt = 0;
+function addPart(d){
+    partCnt++;
+    var idx = partCnt;
+    var tb = document.getElementById('partsBody');
+    var tr = document.createElement('tr');
+    tr.id = 'p' + idx;
+    tr.innerHTML = '<td><input type="text" class="part-concept" placeholder="Nombre de la pieza" value="' + (d ? d.concept : '') + '" oninput="calcParts()"></td>' +
+        '<td><select class="part-status"><option value="nueva"' + (d && d.status === 'nueva' ? ' selected' : '') + '>Nueva</option><option value="reutilizada"' + (d && d.status === 'reutilizada' ? ' selected' : '') + '>Reutilizada</option><option value="garantia"' + (d && d.status === 'garantia' ? ' selected' : '') + '>En garantía</option></select></td>' +
+        '<td><input type="number" class="part-qty" value="' + (d ? d.qty : 1) + '" min="0" step="1" style="text-align:center" oninput="calcParts()"></td>' +
+        '<td><input type="number" class="part-price" value="' + (d ? d.price : '') + '" min="0" step="0.01" placeholder="0.00" style="text-align:right" oninput="calcParts()"></td>' +
+        '<td><input type="text" class="part-total" value="0,00 €" readonly style="text-align:right;background:#f0f5fc;pointer-events:none"></td>' +
+        '<td style="text-align:center"><button class="remove-line-btn" onclick="remPart(\'p' + idx + '\')">✕</button></td>';
+    tb.appendChild(tr);
+    if (d && d.price) calcParts();
+}
+function remPart(id){ document.getElementById(id)?.remove(); calcParts(); }
+function calcParts(){
+    document.querySelectorAll('#partsBody tr').forEach(function(r){
+        var q = parseFloat(r.querySelector('.part-qty')?.value) || 0;
+        var p = parseFloat(r.querySelector('.part-price')?.value) || 0;
+        r.querySelector('.part-total').value = (q * p).toFixed(2).replace('.', ',') + ' €';
+    });
+}
+
+addPart({concept: 'SSD 500GB NVMe', status: 'nueva', qty: 1, price: 65});
+addPart({concept: 'Cable SATA de repuesto', status: 'reutilizada', qty: 1, price: 5});
+
+// ======================== LÍNEAS DE FACTURA ========================
+var invLineCnt = 0;
+function addInvoiceLine(d){
+    invLineCnt++;
+    var idx = invLineCnt;
+    var tb = document.getElementById('invoiceBody');
+    var tr = document.createElement('tr');
+    tr.id = 'il' + idx;
+    tr.innerHTML = '<td><input type="text" class="il-concept" placeholder="Concepto" value="' + (d ? d.concept : '') + '" oninput="recalcInvoice()"></td>' +
+        '<td><select class="il-type" onchange="recalcInvoice()"><option value="servicio"' + (d && d.type === 'servicio' ? ' selected' : '') + '>Servicio</option><option value="pieza"' + (d && d.type === 'pieza' ? ' selected' : '') + '>Pieza</option><option value="diagnostico"' + (d && d.type === 'diagnostico' ? ' selected' : '') + '>Diagnóstico</option><option value="otro"' + (d && d.type === 'otro' ? ' selected' : '') + '>Otro</option></select></td>' +
+        '<td><input type="number" class="il-qty" value="' + (d ? d.qty : 1) + '" min="0" step="1" style="text-align:center" oninput="recalcInvoice()"></td>' +
+        '<td><input type="number" class="il-price" value="' + (d ? d.price : '') + '" min="0" step="0.01" placeholder="0.00" style="text-align:right" oninput="recalcInvoice()"></td>' +
+        '<td><input type="text" class="il-total" value="0,00 €" readonly style="text-align:right;background:#f0f5fc;pointer-events:none"></td>';
+    tb.appendChild(tr);
+    if (d && d.price) recalcInvoice();
+}
+function remInvoiceLine(id){ document.getElementById(id)?.remove(); recalcInvoice(); }
+
+function recalcInvoice(){
+    var base = 0;
+    document.querySelectorAll('#invoiceBody tr').forEach(function(r){
+        var q = parseFloat(r.querySelector('.il-qty')?.value) || 0;
+        var p = parseFloat(r.querySelector('.il-price')?.value) || 0;
+        var t = q * p;
+        base += t;
+        r.querySelector('.il-total').value = t.toFixed(2).replace('.', ',') + ' €';
+    });
+    var ivaAmt = base * 0.21;
+    var totalAmt = base + ivaAmt;
+    document.getElementById('invBase').textContent = base.toFixed(2).replace('.', ',') + ' €';
+    document.getElementById('invIva').textContent = ivaAmt.toFixed(2).replace('.', ',') + ' €';
+    document.getElementById('invTotal').textContent = totalAmt.toFixed(2).replace('.', ',') + ' €';
+}
+
+addInvoiceLine({concept: 'Mano de obra - Reparación', type: 'servicio', qty: 1, price: 45});
+addInvoiceLine({concept: 'SSD 500GB NVMe', type: 'pieza', qty: 1, price: 65});
+addInvoiceLine({concept: 'Cable SATA', type: 'pieza', qty: 1, price: 5});
+
+// ======================== SINCRONIZAR FACTURA ========================
+function syncInvoice(){
+    document.getElementById('invClientName').textContent = document.getElementById('clientName').value;
+    document.getElementById('invClientAddress').textContent = document.getElementById('clientAddress').value;
+    var nifVal = document.getElementById('clientNIF').value;
+    document.getElementById('invClientNIF').textContent = nifVal ? 'NIF/CIF: ' + nifVal : '';
+    document.getElementById('invClientPhone').textContent = document.getElementById('clientPhone').value;
+    document.getElementById('invRefRecepcion').textContent = document.getElementById('refRecepcion').value;
+
+    document.getElementById('invoiceBody').innerHTML = '';
+    invLineCnt = 0;
+
+    document.querySelectorAll('#partsBody tr').forEach(function(r){
+        var concept = r.querySelector('.part-concept').value || 'Pieza';
+        var qty = r.querySelector('.part-qty').value;
+        var price = r.querySelector('.part-price').value;
+        if (price && parseFloat(price) > 0) {
+            addInvoiceLine({concept: concept, type: 'pieza', qty: qty, price: price});
+        }
+    });
+
+    document.querySelectorAll('#worksContainer .work-item').forEach(function(r){
+        var title = r.querySelector('.work-title').value;
+        if (title) {
+            addInvoiceLine({concept: title, type: 'servicio', qty: 1, price: 0});
+        }
+    });
+
+    recalcInvoice();
+}
+
+setTimeout(function(){ syncInvoice(); }, 100);
+
+// ======================== IMÁGENES ========================
+var imageSlots = [null, null, null, null];
+function triggerUpload(i){ document.getElementById('fileInput' + i).click(); }
+function handleImage(ev, i){
+    var f = ev.target.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(e){
+        var sl = document.getElementById('slot' + i);
+        sl.innerHTML = '<img src="' + e.target.result + '" alt="Img ' + (i+1) + '"><button class="remove-img-btn" onclick="remImg(event,' + i + ')">✕</button>';
+        sl.classList.add('has-image');
+        imageSlots[i] = e.target.result;
+    };
+    rd.readAsDataURL(f);
+}
+function remImg(ev, i){
+    ev.stopPropagation();
+    var sl = document.getElementById('slot' + i);
+    sl.innerHTML = '<span class="placeholder-icon">📷</span><span class="placeholder-text">Click para subir imagen ' + (i+1) + '</span>';
+    sl.classList.remove('has-image');
+    imageSlots[i] = null;
+    document.getElementById('fileInput' + i).value = '';
+}
+
+// ======================== FIRMAS ========================
+function initCanvas(cid){
+    var cv = document.getElementById(cid);
+    var ctx = cv.getContext('2d');
+    var drawing = false;
+    var lastX = 0;
+    var lastY = 0;
+
+    function resizeCanvas(){
+        var wrapper = cv.parentElement;
+        var rect = wrapper.getBoundingClientRect();
+        var dpr = window.devicePixelRatio || 1;
+        var tempImg = ctx.getImageData(0, 0, cv.width, cv.height);
+        cv.width = rect.width * dpr;
+        cv.height = 120 * dpr;
+        cv.style.height = '120px';
+        ctx.scale(dpr, dpr);
+        ctx.strokeStyle = '#1a4789';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.putImageData(tempImg, 0, 0);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', function(){ resizeCanvas(); });
+
+    function getPos(e){
+        var rect = cv.getBoundingClientRect();
+        var cx = e.touches ? e.touches[0].clientX : e.clientX;
+        var cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return {x: cx - rect.left, y: cy - rect.top};
+    }
+
+    function startDraw(e){ e.preventDefault(); drawing = true; var p = getPos(e); lastX = p.x; lastY = p.y; }
+    function doDraw(e){ if (!drawing) return; e.preventDefault(); var p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }
+    function stopDraw(){ drawing = false; }
+
+    cv.addEventListener('mousedown', startDraw);
+    cv.addEventListener('mousemove', doDraw);
+    cv.addEventListener('mouseup', stopDraw);
+    cv.addEventListener('mouseleave', stopDraw);
+    cv.addEventListener('touchstart', startDraw, {passive: false});
+    cv.addEventListener('touchmove', doDraw, {passive: false});
+    cv.addEventListener('touchend', stopDraw);
+}
+
+initCanvas('sigTech');
+initCanvas('sigClient');
+initCanvas('sigInvTech');
+initCanvas('sigInvClient');
+
+function clearSignature(id){
+    var c = document.getElementById(id);
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+function clearAllSignatures(){
+    ['sigTech','sigClient','sigInvTech','sigInvClient'].forEach(clearSignature);
+    document.getElementById('techSignerName').value = '';
+    document.getElementById('clientSignerName').value = '';
+}
+
+// ======================== RESETEAR ========================
+function resetForm(){
+    if (!confirm('¿Está seguro de que desea limpiar todo el documento?')) return;
+
+    document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), textarea').forEach(function(e){ e.value = ''; });
+    document.querySelectorAll('select').forEach(function(e){ e.selectedIndex = 0; });
+
+    document.getElementById('clientName').value = 'Comunidad de Madrid Alcobendas';
+    document.getElementById('clientPhone').value = '+34 612341567';
+    document.getElementById('clientAddress').value = 'Camino de Alcobendas 118 292 Alcobendas Madrid';
+    document.getElementById('entryDate').value = now.toISOString().split('T')[0];
+    document.getElementById('dueDate').value = due.toISOString().split('T')[0];
+
+    for (var i = 0; i < 4; i++) remImg(new Event('click'), i);
+
+    document.getElementById('worksContainer').innerHTML = '';
+    workCnt = 0;
+    addWork({title: 'Diagnóstico y reparación del equipo', detail: ''});
+    addWork({title: 'Sustitución de componentes defectuosos', detail: ''});
+    addWork({title: 'Verificación y test de funcionamiento', detail: ''});
+
+    document.getElementById('partsBody').innerHTML = '';
+    partCnt = 0;
+    addPart({concept: 'SSD 500GB NVMe', status: 'nueva', qty: 1, price: 65});
+    addPart({concept: 'Cable SATA de repuesto', status: 'reutilizada', qty: 1, price: 5});
+
+    document.getElementById('invoiceBody').innerHTML = '';
+    invLineCnt = 0;
+    addInvoiceLine({concept: 'Mano de obra - Reparación', type: 'servicio', qty: 1, price: 45});
+    addInvoiceLine({concept: 'SSD 500GB NVMe', type: 'pieza', qty: 1, price: 65});
+    addInvoiceLine({concept: 'Cable SATA', type: 'pieza', qty: 1, price: 5});
+
+    clearAllSignatures();
+
+    var na = 'ALB-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*9000)+1000);
+    document.getElementById('albaranNum').textContent = na;
+    document.getElementById('invAlbaranRef').textContent = na;
+    document.getElementById('invRefPayment').textContent = na;
+
+    var nf = 'FAC-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*9000)+1000);
+    document.getElementById('invoiceNum').textContent = nf;
+
+    syncInvoice();
+}
+
+// ======================== GENERAR PDF CON PÁGINAS SEPARADAS ========================
+async function generatePDF(){
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.classList.add('active');
+
+    var footerActions = document.getElementById('footerActions');
+    footerActions.style.display = 'none';
+
+    var separator = document.getElementById('pageSeparator');
+    separator.style.display = 'none';
+
+    var hiddenBtns = document.querySelectorAll('.clear-sig-btn, .remove-img-btn, .remove-btn-sm, .remove-line-btn, .add-work-btn, .add-line-btn');
+    hiddenBtns.forEach(function(b){ b.style.display = 'none'; });
+
+    try {
+        await new Promise(function(r){ setTimeout(r, 300); });
+
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF('p', 'mm', 'a4');
+        var pdfWidth = 210;
+        var pdfHeight = 297;
+
+        // --- PÁGINA 1: ALBARÁN ---
+        var albaranEl = document.getElementById('albaranPage');
+        var albaranCanvas = await html2canvas(albaranEl, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            windowWidth: 900
+        });
+
+        var albaranImgData = albaranCanvas.toDataURL('image/jpeg', 0.95);
+        var albaranImgWidth = pdfWidth;
+        var albaranImgHeight = (albaranCanvas.height * albaranImgWidth) / albaranCanvas.width;
+
+        pdf.addImage(albaranImgData, 'JPEG', 0, 0, albaranImgWidth, albaranImgHeight);
+
+        // Si el albarán es más largo que una página, añadir páginas adicionales
+        var remainingAlbaran = albaranImgHeight - pdfHeight;
+        var albaranPosition = -pdfHeight;
+        while (remainingAlbaran > 0) {
+            pdf.addPage();
+            pdf.addImage(albaranImgData, 'JPEG', 0, albaranPosition, albaranImgWidth, albaranImgHeight);
+            albaranPosition -= pdfHeight;
+            remainingAlbaran -= pdfHeight;
+        }
+
+        // --- PÁGINA 2: FACTURA ---
+        var invoiceEl = document.getElementById('invoicePage');
+        var invoiceCanvas = await html2canvas(invoiceEl, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            windowWidth: 900
+        });
+
+        var invoiceImgData = invoiceCanvas.toDataURL('image/jpeg', 0.95);
+        var invoiceImgWidth = pdfWidth;
+        var invoiceImgHeight = (invoiceCanvas.height * invoiceImgWidth) / invoiceCanvas.width;
+
+        pdf.addPage();
+        pdf.addImage(invoiceImgData, 'JPEG', 0, 0, invoiceImgWidth, invoiceImgHeight);
+
+        // Si la factura es más larga que una página, añadir páginas adicionales
+        var remainingInvoice = invoiceImgHeight - pdfHeight;
+        var invoicePosition = -pdfHeight;
+        while (remainingInvoice > 0) {
+            pdf.addPage();
+            pdf.addImage(invoiceImgData, 'JPEG', 0, invoicePosition, invoiceImgWidth, invoiceImgHeight);
+            invoicePosition -= pdfHeight;
+            remainingInvoice -= pdfHeight;
+        }
+
+        var clientName = document.getElementById('clientName').value || 'Cliente';
+        pdf.save('MicroInfo_Albaran_Factura_' + clientName.replace(/\s+/g, '_') + '_' + albaranNum + '.pdf');
+
+    } catch (err) {
+        console.error('Error al generar PDF:', err);
+        alert('Error al generar el PDF. Inténtelo de nuevo.');
+    } finally {
+        footerActions.style.display = 'flex';
+        separator.style.display = '';
+        hiddenBtns.forEach(function(b){ b.style.display = ''; });
+        overlay.classList.remove('active');
+    }
+}
+
+setTimeout(function(){ recalcInvoice(); }, 150);
+</script>
+</body>
+</html>
+

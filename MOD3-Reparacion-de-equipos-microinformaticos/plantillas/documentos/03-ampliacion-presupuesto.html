@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroInfo - Ampliación de Presupuesto</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e8f0fe;
+            color: #1a2332;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(30, 78, 160, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a4789 0%, #2563a8 50%, #3b82c4 100%);
+            color: white;
+            padding: 28px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 13px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .header-right strong {
+            display: block;
+            font-size: 15px;
+            opacity: 1;
+        }
+
+        .badge-ampliacion {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .document-title {
+            text-align: center;
+            padding: 18px 36px;
+            background: #f0f5fc;
+            border-bottom: 2px solid #d4e2f7;
+        }
+
+        .document-title h2 {
+            font-size: 20px;
+            color: #1a4789;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .document-title p {
+            font-size: 13px;
+            color: #5a7ba8;
+            margin-top: 4px;
+        }
+
+        .form-body {
+            padding: 30px 36px 40px;
+        }
+
+        .section {
+            margin-bottom: 26px;
+            border: 1.5px solid #c8daf0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #1e4d92, #2a6bc4);
+            color: white;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .section-header .icon {
+            font-size: 16px;
+        }
+
+        .section-header.amber {
+            background: linear-gradient(135deg, #92400e, #d97706);
+        }
+
+        .section-header.red {
+            background: linear-gradient(135deg, #991b1b, #dc2626);
+        }
+
+        .section-body {
+            padding: 18px;
+            background: #fafcff;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.full-width {
+            flex: 100%;
+        }
+
+        .form-group.half-width {
+            flex: 0 0 calc(50% - 8px);
+        }
+
+        .form-group.third-width {
+            flex: 0 0 calc(33.333% - 11px);
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3a5a8c;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #c8daf0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1a2332;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2563a8;
+            box-shadow: 0 0 0 3px rgba(37, 99, 168, 0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Budget comparison table */
+        .budget-compare {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .budget-block {
+            border: 1.5px solid #c8daf0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .budget-block-header {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .budget-block-header.original {
+            background: #f0f5fc;
+            color: #1a4789;
+            border-bottom: 1.5px solid #c8daf0;
+        }
+
+        .budget-block-header.ampliado {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border-bottom: 1.5px solid #f59e0b;
+        }
+
+        .budget-block-header.total {
+            background: linear-gradient(135deg, #1e4d92, #2563a8);
+            color: white;
+            border-bottom: none;
+        }
+
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .budget-table thead th {
+            background: #f0f5fc;
+            color: #3a5a8c;
+            padding: 8px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 1px solid #c8daf0;
+        }
+
+        .budget-table tbody td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e8f0fe;
+            font-size: 13px;
+        }
+
+        .budget-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .budget-table tbody tr:hover {
+            background: #f5f8fc;
+        }
+
+        .budget-table input,
+        .budget-table select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1.5px solid #d4e2f7;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: #1a2332;
+            background: #f8fafd;
+        }
+
+        .budget-table input:focus,
+        .budget-table select:focus {
+            outline: none;
+            border-color: #2563a8;
+            background: white;
+        }
+
+        .budget-table .col-concept { width: 40%; }
+        .budget-table .col-type { width: 14%; }
+        .budget-table .col-qty { width: 10%; }
+        .budget-table .col-price { width: 13%; }
+        .budget-table .col-total { width: 12%; }
+        .budget-table .col-action { width: 11%; }
+
+        .budget-table .row-total-line td {
+            background: #f0f5fc;
+            font-weight: 600;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        .budget-table .row-grand-total td {
+            background: linear-gradient(135deg, #1e4d92, #2563a8);
+            color: white;
+            font-weight: 700;
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .budget-table .col-total input {
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            text-align: right;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .remove-line-btn {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .remove-line-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .add-line-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background: #f0f5fc;
+            border: 2px dashed #b0c8e8;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e4d92;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .add-line-btn:hover {
+            background: #e0ecfb;
+            border-color: #2563a8;
+        }
+
+        /* Justification section */
+        .justification-box {
+            background: #fefce8;
+            border: 1.5px solid #fbbf24;
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .justification-box h4 {
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .justification-box .justification-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .justification-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: white;
+            border: 1.5px solid #fef3c7;
+            border-radius: 6px;
+        }
+
+        .justification-step .step-num {
+            background: linear-gradient(135deg, #92400e, #d97706);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .justification-step input,
+        .justification-step textarea {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1.5px solid #fef3c7;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: #1a2332;
+            background: #fffdf0;
+        }
+
+        .justification-step textarea {
+            resize: vertical;
+            min-height: 45px;
+        }
+
+        .justification-step input:focus,
+        .justification-step textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .add-just-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: #fefce8;
+            border: 2px dashed #fbbf24;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .add-just-btn:hover {
+            background: #fef9c3;
+            border-color: #f59e0b;
+        }
+
+        .remove-just-btn {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: 1.5px solid rgba(220, 38, 38, 0.3);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .remove-just-btn:hover {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        /* Conditions */
+        .conditions-box {
+            background: #fef2f2;
+            border: 1.5px solid #fca5a5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .conditions-box h4 {
+            color: #991b1b;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .conditions-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .conditions-box ul li {
+            font-size: 12px;
+            color: #7f1d1d;
+            padding: 3px 0 3px 18px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .conditions-box ul li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            font-size: 11px;
+        }
+
+        .acceptance-check {
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .acceptance-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #2563a8;
+            flex-shrink: 0;
+        }
+
+        .acceptance-check label {
+            font-size: 13px;
+            color: #166534;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Summary cards */
+        .summary-cards {
+            display: flex;
+            gap: 14px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 160px;
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card.card-original {
+            background: #f0f5fc;
+            border: 1.5px solid #c8daf0;
+        }
+
+        .summary-card.card-ampliacion {
+            background: #fef9c3;
+            border: 1.5px solid #fbbf24;
+        }
+
+        .summary-card.card-total {
+            background: linear-gradient(135deg, #1e4d92, #2563a8);
+            border: none;
+            color: white;
+        }
+
+        .summary-card .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .summary-card.card-original .card-label { color: #3a5a8c; }
+        .summary-card.card-ampliacion .card-label { color: #92400e; }
+        .summary-card.card-total .card-label { color: rgba(255,255,255,0.8); }
+
+        .summary-card .card-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .summary-card.card-original .card-value { color: #1a4789; }
+        .summary-card.card-ampliacion .card-value { color: #92400e; }
+        .summary-card.card-total .card-value { color: white; }
+
+        .summary-card .card-sub {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .summary-card.card-original .card-sub { color: #5a7ba8; }
+        .summary-card.card-ampliacion .card-sub { color: #b45309; }
+        .summary-card.card-total .card-sub { color: rgba(255,255,255,0.7); }
+
+        /* Images */
+        .images-section .section-body {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .image-slot {
+            width: 190px;
+            height: 150px;
+            border: 2px dashed #b0c8e8;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f5f8fc;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-slot:hover {
+            border-color: #2563a8;
+            background: #edf3fc;
+        }
+
+        .image-slot.has-image {
+            border-style: solid;
+            border-color: #2563a8;
+            background: #fff;
+        }
+
+        .image-slot .placeholder-icon {
+            font-size: 32px;
+            color: #8baad4;
+            margin-bottom: 4px;
+        }
+
+        .image-slot .placeholder-text {
+            font-size: 11px;
+            color: #8baad4;
+            text-align: center;
+            padding: 0 8px;
+        }
+
+        .image-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .image-slot .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        /* Signatures */
+        .signatures-row {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .signature-box {
+            flex: 1;
+        }
+
+        .signature-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3a5a8c;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signature-canvas-wrapper {
+            border: 1.5px solid #c8daf0;
+            border-radius: 8px;
+            background: white;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        .signature-canvas-wrapper canvas {
+            display: block;
+            width: 100%;
+            height: 120px;
+        }
+
+        .clear-sig-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(220, 38, 38, 0.85);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            z-index: 1;
+        }
+
+        .clear-sig-btn:hover {
+            background: rgba(185, 28, 28, 1);
+        }
+
+        .receipt-number {
+            display: inline-block;
+            background: #e8f0fe;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1a4789;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer-actions {
+            padding: 20px 36px 30px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a4789, #2563a8);
+            color: white;
+            box-shadow: 0 3px 12px rgba(26, 71, 137, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(26, 71, 137, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a4789;
+            border: 1.5px solid #1a4789;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f5fc;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            box-shadow: 0 3px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(220, 38, 38, 0.35);
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 71, 137, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { flex-direction: column; text-align: center; gap: 12px; padding: 20px; }
+            .header-right { text-align: center; }
+            .form-body { padding: 20px 16px 30px; }
+            .form-row { flex-direction: column; }
+            .form-group, .form-group.half-width, .form-group.third-width { min-width: 100%; flex: 100%; }
+            .signatures-row { flex-direction: column; }
+            .image-slot { width: calc(50% - 10px); }
+            .footer-actions { padding: 16px; flex-direction: column; }
+            .btn { justify-content: center; }
+            .summary-cards { flex-direction: column; }
+            .summary-card { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Generando PDF...</div>
+</div>
+
+<div class="container" id="documentContainer">
+    <div class="header">
+        <div class="header-left">
+            <h1>⚙ MicroInfo</h1>
+            <p>Calle de los electrones 77, 28033 Madrid</p>
+            <p>CIF: 541234156</p>
+        </div>
+        <div class="header-right">
+            <strong>Ampliación de Presupuesto</strong>
+            <span class="badge-ampliacion">⚡ AMPLIACIÓN</span><br>
+            <span>Fecha: <span id="headerDate"></span></span><br>
+            <span>Nº Ampliación: <span id="ampNum" class="receipt-number"></span></span>
+        </div>
+    </div>
+
+    <div class="document-title">
+        <h2>📑 Documento de Ampliación de Presupuesto</h2>
+        <p>Modificación y ampliación del presupuesto inicialmente aprobado</p>
+    </div>
+
+    <div class="form-body">
+        <!-- Datos del Cliente -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">👤</span> Datos del Cliente
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Nombre / Razón Social</label>
+                        <input type="text" id="clientName" value="Comunidad de Madrid Alcobendas" placeholder="Nombre del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="clientPhone" value="+34 612341567" placeholder="Teléfono">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Dirección</label>
+                        <input type="text" id="clientAddress" value="Camino de Alcobendas 118 292 Alcobendas Madrid" placeholder="Dirección completa">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="clientEmail" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>NIF / CIF</label>
+                        <input type="text" id="clientNIF" placeholder="NIF o CIF">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referencia Presupuesto Original y Técnico -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">📎</span> Referencia y Técnico Responsable
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nº Presupuesto Original</label>
+                        <input type="text" id="origBudgetNum" placeholder="DIA-2026-XX-XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Presupuesto Original</label>
+                        <input type="date" id="origBudgetDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Recepción Ref.</label>
+                        <input type="text" id="receiptRef" placeholder="REC-XXXX">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Técnico Responsable</label>
+                        <input type="text" id="techName" placeholder="Nombre del técnico">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Ampliación</label>
+                        <input type="date" id="ampDate">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Marca del Equipo</label>
+                        <input type="text" id="equipBrand" placeholder="HP, Dell, Lenovo...">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="equipModel" placeholder="Modelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Serie (S/N)</label>
+                        <input type="text" id="equipSN" placeholder="Número de serie">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Presupuesto Original (Resumen) -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">📊</span> Resumen del Presupuesto Original
+            </div>
+            <div class="section-body">
+                <div class="budget-block">
+                    <div class="budget-block-header original">
+                        📋 Presupuesto Inicial Aprobado
+                    </div>
+                    <table class="budget-table">
+                        <thead>
+                            <tr>
+                                <th class="col-concept">Concepto</th>
+                                <th class="col-type">Tipo</th>
+                                <th class="col-qty">Cant.</th>
+                                <th class="col-price">Precio Unit.</th>
+                                <th class="col-total">Total</th>
+                                <th class="col-action"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="origBudgetBody">
+                        </tbody>
+                    </table>
+                    <button class="add-line-btn" onclick="addOrigLine()">
+                        <span style="font-size: 16px;">＋</span> Añadir Línea al Presupuesto Original
+                    </button>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Total Presupuesto Original (€)</label>
+                    <input type="number" id="origTotalManual" placeholder="0.00" step="0.01" oninput="recalcAll()" style="font-weight: 600; font-size: 16px; color: #1a4789;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Justificación de la Ampliación -->
+        <div class="section">
+            <div class="section-header amber">
+                <span class="icon">❓</span> Justificación de la Ampliación — ¿Por qué se amplía el presupuesto?
+            </div>
+            <div class="section-body">
+                <div class="justification-box">
+                    <h4>📝 Motivos de la Ampliación</h4>
+                    <div class="justification-content" id="justificationContainer">
+                    </div>
+                    <button class="add-just-btn" onclick="addJustification()" style="margin-top: 10px;">
+                        <span style="font-size: 16px;">＋</span> Añadir Motivo
+                    </button>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <div class="form-group full-width">
+                        <label>Resumen General de la Ampliación</label>
+                        <textarea id="ampSummary" placeholder="Explicar de forma general al cliente el motivo por el cual ha sido necesaria esta ampliación de presupuesto..." style="min-height: 90px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row" style="margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Urgencia</label>
+                        <select id="urgencyLevel">
+                            <option value="normal">Normal</option>
+                            <option value="importante">Importante</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Impacto en Plazo de Entrega</label>
+                        <input type="text" id="deliveryImpact" placeholder="Ej: Se retrasa 2-3 días adicionales">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nuevo Presupuesto Ampliado -->
+        <div class="section">
+            <div class="section-header red">
+                <span class="icon">💰</span> Conceptos de la Ampliación (Nuevos)
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Validez de esta Ampliación</label>
+                        <input type="text" id="ampValidity" value="15 días naturales" placeholder="Plazo de validez">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de IVA</label>
+                        <select id="ivaType" onchange="recalcBudget()">
+                            <option value="21">IVA 21%</option>
+                            <option value="10">IVA 10%</option>
+                            <option value="4">IVA 4%</option>
+                            <option value="0">Sin IVA (exento)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <table class="budget-table" id="ampBudgetTable">
+                    <thead>
+                        <tr>
+                            <th class="col-concept">Concepto Adicional</th>
+                            <th class="col-type">Tipo</th>
+                            <th class="col-qty">Cant.</th>
+                            <th class="col-price">Precio Unit.</th>
+                            <th class="col-total">Total</th>
+                            <th class="col-action"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ampBudgetBody">
+                    </tbody>
+                </table>
+                <button class="add-line-btn" onclick="addAmpLine()">
+                    <span style="font-size: 16px;">＋</span> Añadir Línea de Ampliación
+                </button>
+
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Total Ampliación (€)</label>
+                    <input type="number" id="ampTotalManual" placeholder="0.00" step="0.01" oninput="recalcAll()" style="font-weight: 600; font-size: 16px; color: #92400e;">
+                </div>
+
+                <!-- Resumen Comparativo -->
+                <div class="summary-cards">
+                    <div class="summary-card card-original">
+                        <div class="card-label">Presupuesto Original</div>
+                        <div class="card-value" id="summaryOriginal">0,00 €</div>
+                        <div class="card-sub">Inicial</div>
+                    </div>
+                    <div class="summary-card card-ampliacion">
+                        <div class="card-label">Importe Ampliación</div>
+                        <div class="card-value" id="summaryAmpliacion">0,00 €</div>
+                        <div class="card-sub">Adicional</div>
+                    </div>
+                    <div class="summary-card card-total">
+                        <div class="card-label">Nuevo Total Acumulado</div>
+                        <div class="card-value" id="summaryTotal">0,00 €</div>
+                        <div class="card-sub">Total acumulado</div>
+                    </div>
+                </div>
+
+                <!-- Conditions -->
+                <div class="conditions-box">
+                    <h4>⚠️ Condiciones de la Ampliación</h4>
+                    <ul>
+                        <li>Esta ampliación modifica el presupuesto original, incrementando el importe total en la cantidad indicada.</li>
+                        <li><strong>El cliente debe autorizar expresamente esta ampliación antes de que se ejecuten los nuevos trabajos.</strong></li>
+                        <li>Los conceptos no incluidos en esta ampliación mantienen las condiciones del presupuesto original.</li>
+                        <li>En caso de no aceptar esta ampliación, se procederá con los trabajos del presupuesto original aprobado.</li>
+                        <li>La garantía sobre las nuevas reparaciones o componentes será de <strong>3 meses</strong>.</li>
+                        <li>El plazo de entrega puede verse modificado según la disponibilidad de los nuevos componentes requeridos.</li>
+                        <li>Esta ampliación tiene validez de <strong id="ampValidityLabel">15 días naturales</strong> desde su emisión.</li>
+                    </ul>
+                </div>
+
+                <div class="acceptance-check">
+                    <input type="checkbox" id="acceptCheck">
+                    <label for="acceptCheck">He leído y autorizo esta ampliación de presupuesto. Entiendo que el nuevo importe total se incrementa según lo detallado y acepto las condiciones aquí expuestas.</label>
+                </div>
+
+                <div class="form-row" style="margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Forma de Pago</label>
+                        <select id="payMethod">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta de crédito/débito</option>
+                            <option value="transferencia">Transferencia bancaria</option>
+                            <option value="bizum">Bizum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nuevo Plazo de Entrega Estimado</label>
+                        <input type="text" id="newDeliveryTime" placeholder="Ej: 5-7 días laborables">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Imágenes -->
+        <div class="section images-section">
+            <div class="section-header">
+                <span class="icon">📷</span> Imágenes del Equipo
+            </div>
+            <div class="section-body">
+                <div class="image-slot" id="slot0" onclick="triggerUpload(0)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 1</span>
+                </div>
+                <div class="image-slot" id="slot1" onclick="triggerUpload(1)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 2</span>
+                </div>
+                <div class="image-slot" id="slot2" onclick="triggerUpload(2)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 3</span>
+                </div>
+                <div class="image-slot" id="slot3" onclick="triggerUpload(3)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firmas -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">✍️</span> Firmas de Conformidad — Ampliación Autorizada
+            </div>
+            <div class="section-body">
+                <div class="signatures-row">
+                    <div class="signature-box">
+                        <label>Firma del Técnico</label>
+                        <div class="signature-canvas-wrapper">
+                            <button class="clear-sig-btn" onclick="clearSignature('sigTech')">✕</button>
+                            <canvas id="sigTech"></canvas>
+                        </div>
+                        <input type="text" id="techSignerName" placeholder="Nombre del técnico" style="margin-top: 8px;">
+                    </div>
+                    <div class="signature-box">
+                        <label>Firma del Cliente (Autorización Ampliación)</label>
+                        <div class="signature-canvas-wrapper">
+                            <button class="clear-sig-btn" onclick="clearSignature('sigClient')">✕</button>
+                            <canvas id="sigClient"></canvas>
+                        </div>
+                        <input type="text" id="clientSignerName" placeholder="Nombre del cliente" style="margin-top: 8px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions" id="footerActions">
+        <button class="btn btn-primary" onclick="generatePDF()">
+            <span>📄</span> Generar PDF
+        </button>
+        <button class="btn btn-secondary" onclick="resetForm()">
+            <span>🔄</span> Nuevo Documento
+        </button>
+        <button class="btn btn-danger" onclick="clearAllSignatures()">
+            <span>🗑️</span> Limpiar Firmas
+        </button>
+    </div>
+</div>
+
+<input type="file" id="fileInput0" class="hidden-input" accept="image/*" onchange="handleImage(event, 0)">
+<input type="file" id="fileInput1" class="hidden-input" accept="image/*" onchange="handleImage(event, 1)">
+<input type="file" id="fileInput2" class="hidden-input" accept="image/*" onchange="handleImage(event, 2)">
+<input type="file" id="fileInput3" class="hidden-input" accept="image/*" onchange="handleImage(event, 3)">
+
+<script>
+    // Initialize dates
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    document.getElementById('headerDate').textContent = dateStr;
+    document.getElementById('ampDate').value = now.toISOString().split('T')[0];
+
+    const ampNumStr = 'AMP-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('ampNum').textContent = ampNumStr;
+
+    // ====== ORIGINAL BUDGET ======
+    let origLineCount = 0;
+
+    function addOrigLine(data) {
+        origLineCount++;
+        const idx = origLineCount;
+        const tbody = document.getElementById('origBudgetBody');
+        const tr = document.createElement('tr');
+        tr.id = 'oline-' + idx;
+        tr.innerHTML = `
+            <td><input type="text" class="oline-concept" placeholder="Descripción" value="${data ? data.concept : ''}"></td>
+            <td>
+                <select class="oline-type">
+                    <option value="mano_obra" ${data && data.type === 'mano_obra' ? 'selected' : ''}>Mano de obra</option>
+                    <option value="pieza" ${data && data.type === 'pieza' ? 'selected' : ''}>Pieza</option>
+                    <option value="diagnostico" ${data && data.type === 'diagnostico' ? 'selected' : ''}>Diagnóstico</option>
+                    <option value="otro" ${data && data.type === 'otro' ? 'selected' : ''}>Otro</option>
+                </select>
+            </td>
+            <td><input type="number" class="oline-qty" value="${data ? data.qty : 1}" min="0" step="1" style="text-align:center;" oninput="calcOrigLine(this)"></td>
+            <td><input type="number" class="oline-price" value="${data ? data.price : ''}" min="0" step="0.01" placeholder="0.00" style="text-align:right;" oninput="calcOrigLine(this)"></td>
+            <td><input type="text" class="oline-total" value="0,00 €" readonly style="text-align:right; background:#f0f5fc; pointer-events:none;"></td>
+            <td style="text-align:center;"><button class="remove-line-btn" onclick="removeOrigLine('oline-${idx}')">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+        if (data && data.price) {
+            const priceInput = tr.querySelector('.oline-price');
+            calcOrigLine(priceInput);
+        }
+    }
+
+    function removeOrigLine(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+        recalcAll();
+    }
+
+    function calcOrigLine(el) {
+        const tr = el.closest('tr');
+        const qty = parseFloat(tr.querySelector('.oline-qty').value) || 0;
+        const price = parseFloat(tr.querySelector('.oline-price').value) || 0;
+        tr.querySelector('.oline-total').value = (qty * price).toFixed(2).replace('.', ',') + ' €';
+        recalcAll();
+    }
+
+    // Default original budget lines
+    addOrigLine({ concept: 'Diagnóstico y revisión del equipo', type: 'diagnostico', qty: 1, price: 35.00 });
+    addOrigLine({ concept: 'Mano de obra - Reparación', type: 'mano_obra', qty: 1, price: 45.00 });
+    addOrigLine({ concept: 'Formateo e instalación de S.O.', type: 'mano_obra', qty: 1, price: 30.00 });
+
+    // ====== AMPLIFIED BUDGET ======
+    let ampLineCount = 0;
+
+    function addAmpLine(data) {
+        ampLineCount++;
+        const idx = ampLineCount;
+        const tbody = document.getElementById('ampBudgetBody');
+        const tr = document.createElement('tr');
+        tr.id = 'aline-' + idx;
+        tr.innerHTML = `
+            <td><input type="text" class="aline-concept" placeholder="Descripción del nuevo concepto" value="${data ? data.concept : ''}" oninput="calcAmpLine(this)"></td>
+            <td>
+                <select class="aline-type" onchange="calcAmpLine(this)">
+                    <option value="mano_obra" ${data && data.type === 'mano_obra' ? 'selected' : ''}>Mano de obra</option>
+                    <option value="pieza" ${data && data.type === 'pieza' ? 'selected' : ''}>Pieza</option>
+                    <option value="diagnostico" ${data && data.type === 'diagnostico' ? 'selected' : ''}>Diagnóstico</option>
+                    <option value="otro" ${data && data.type === 'otro' ? 'selected' : ''}>Otro</option>
+                </select>
+            </td>
+            <td><input type="number" class="aline-qty" value="${data ? data.qty : 1}" min="0" step="1" style="text-align:center;" oninput="calcAmpLine(this)"></td>
+            <td><input type="number" class="aline-price" value="${data ? data.price : ''}" min="0" step="0.01" placeholder="0.00" style="text-align:right;" oninput="calcAmpLine(this)"></td>
+            <td><input type="text" class="aline-total" value="0,00 €" readonly style="text-align:right; background:#f0f5fc; pointer-events:none;"></td>
+            <td style="text-align:center;"><button class="remove-line-btn" onclick="removeAmpLine('aline-${idx}')">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+        if (data && data.price) {
+            const priceInput = tr.querySelector('.aline-price');
+            calcAmpLine(priceInput);
+        }
+    }
+
+    function removeAmpLine(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+        recalcBudget();
+    }
+
+    function calcAmpLine(el) {
+        const tr = el.closest('tr');
+        const qty = parseFloat(tr.querySelector('.aline-qty').value) || 0;
+        const price = parseFloat(tr.querySelector('.aline-price').value) || 0;
+        tr.querySelector('.aline-total').value = (qty * price).toFixed(2).replace('.', ',') + ' €';
+        recalcBudget();
+    }
+
+    function recalcBudget() {
+        const rows = document.querySelectorAll('#ampBudgetBody tr');
+        let totalAmp = 0;
+        rows.forEach(row => {
+            const qty = parseFloat(row.querySelector('.aline-qty')?.value) || 0;
+            const price = parseFloat(row.querySelector('.aline-price')?.value) || 0;
+            totalAmp += qty * price;
+        });
+        recalcAll();
+    }
+
+    // ====== SUMMARY ======
+    function recalcAll() {
+        // Calculate original total from lines
+        let origFromLines = 0;
+        document.querySelectorAll('#origBudgetBody tr').forEach(row => {
+            const qty = parseFloat(row.querySelector('.oline-qty')?.value) || 0;
+            const price = parseFloat(row.querySelector('.oline-price')?.value) || 0;
+            origFromLines += qty * price;
+        });
+
+        const origTotal = parseFloat(document.getElementById('origTotalManual').value) || origFromLines;
+        if (!document.getElementById('origTotalManual').value && origFromLines > 0) {
+            document.getElementById('origTotalManual').value = origFromLines.toFixed(2);
+        }
+
+        // Calculate amplification total from lines
+        let ampFromLines = 0;
+        document.querySelectorAll('#ampBudgetBody tr').forEach(row => {
+            const qty = parseFloat(row.querySelector('.aline-qty')?.value) || 0;
+            const price = parseFloat(row.querySelector('.aline-price')?.value) || 0;
+            ampFromLines += qty * price;
+        });
+
+        const ampTotal = parseFloat(document.getElementById('ampTotalManual').value) || ampFromLines;
+        if (!document.getElementById('ampTotalManual').value && ampFromLines > 0) {
+            document.getElementById('ampTotalManual').value = ampFromLines.toFixed(2);
+        }
+
+        const grandTotal = origTotal + ampTotal;
+
+        document.getElementById('summaryOriginal').textContent = origTotal.toFixed(2).replace('.', ',') + ' €';
+        document.getElementById('summaryAmpliacion').textContent = ampTotal.toFixed(2).replace('.', ',') + ' €';
+        document.getElementById('summaryTotal').textContent = grandTotal.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    // Default amplification lines
+    addAmpLine({ concept: 'Reemplazo de disco duro defectuoso (SSD 500GB)', type: 'pieza', qty: 1, price: 65.00 });
+    addAmpLine({ concept: 'Instalación y configuración del nuevo disco', type: 'mano_obra', qty: 1, price: 40.00 });
+    addAmpLine({ concept: 'Recuperación de datos del disco anterior', type: 'mano_obra', qty: 1, price: 55.00 });
+
+    // ====== JUSTIFICATIONS ======
+    let justCount = 0;
+
+    function addJustification(data) {
+        justCount++;
+        const idx = justCount;
+        const container = document.getElementById('justificationContainer');
+        const div = document.createElement('div');
+        div.className = 'justification-step';
+        div.id = 'just-' + idx;
+        div.innerHTML = `
+            <div class="step-num">${idx}</div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                <input type="text" class="just-title" placeholder="Título del motivo (Ej: Componente adicional necesario)" value="${data ? data.title : ''}">
+                <textarea class="just-detail" placeholder="Describir detalladamente por qué ha sido necesario este concepto adicional...">${data ? data.detail : ''}</textarea>
+            </div>
+            <button class="remove-just-btn" onclick="removeJustification('just-${idx}')">✕</button>
+        `;
+        container.appendChild(div);
+        renumberJustifications();
+    }
+
+    function removeJustification(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+        renumberJustifications();
+    }
+
+    function renumberJustifications() {
+        const steps = document.querySelectorAll('#justificationContainer .justification-step');
+        steps.forEach((step, i) => {
+            step.querySelector('.step-num').textContent = i + 1;
+        });
+    }
+
+    // Default justifications
+    addJustification({
+        title: 'Disco duro defectuoso detectado durante reparación',
+        detail: 'Durante el proceso de reparación se ha detectado que el disco duro original presenta sectores dañados y errores de lectura, lo que hace necesario su reemplazo para garantizar el correcto funcionamiento del equipo.'
+    });
+    addJustification({
+        title: 'Recuperación de datos del cliente',
+        detail: 'Al reemplazar el disco duro, es necesario realizar un proceso de recuperación de datos del disco anterior para transferir los archivos del cliente al nuevo dispositivo, evitando la pérdida de información.'
+    });
+
+    // ====== IMAGE HANDLING ======
+    const imageSlots = [null, null, null, null];
+
+    function triggerUpload(index) {
+        document.getElementById('fileInput' + index).click();
+    }
+
+    function handleImage(event, index) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const slot = document.getElementById('slot' + index);
+            slot.innerHTML = `
+                <img src="${e.target.result}" alt="Imagen ${index + 1}">
+                <button class="remove-btn" onclick="removeImage(event, ${index})">✕</button>
+            `;
+            slot.classList.add('has-image');
+            imageSlots[index] = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeImage(event, index) {
+        event.stopPropagation();
+        const slot = document.getElementById('slot' + index);
+        slot.innerHTML = `
+            <span class="placeholder-icon">📷</span>
+            <span class="placeholder-text">Click para subir imagen ${index + 1}</span>
+        `;
+        slot.classList.remove('has-image');
+        imageSlots[index] = null;
+        document.getElementById('fileInput' + index).value = '';
+    }
+
+    // ====== SIGNATURE CANVASES ======
+    function initSignatureCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function resizeCanvas() {
+            const wrapper = canvas.parentElement;
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const tempImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            canvas.width = rect.width * dpr;
+            canvas.height = 120 * dpr;
+            canvas.style.height = '120px';
+            ctx.scale(dpr, dpr);
+            ctx.strokeStyle = '#1a4789';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.putImageData(tempImg, 0, 0);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', () => resizeCanvas());
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - rect.left, y: cy - rect.top };
+        }
+
+        function startDraw(e) {
+            e.preventDefault();
+            drawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDraw() {
+            drawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseleave', stopDraw);
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDraw);
+    }
+
+    initSignatureCanvas('sigTech');
+    initSignatureCanvas('sigClient');
+
+    function clearSignature(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function clearAllSignatures() {
+        clearSignature('sigTech');
+        clearSignature('sigClient');
+        document.getElementById('techSignerName').value = '';
+        document.getElementById('clientSignerName').value = '';
+    }
+
+    // Update validity label
+    document.getElementById('ampValidity').addEventListener('input', function() {
+        document.getElementById('ampValidityLabel').textContent = this.value;
+    });
+
+    // ====== RESET ======
+    function resetForm() {
+        if (!confirm('¿Está seguro de que desea limpiar todo el documento?')) return;
+
+        document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), textarea').forEach(el => { el.value = ''; });
+        document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+
+        document.getElementById('clientName').value = 'Comunidad de Madrid Alcobendas';
+        document.getElementById('clientPhone').value = '+34 612341567';
+        document.getElementById('clientAddress').value = 'Camino de Alcobendas 118 292 Alcobendas Madrid';
+        document.getElementById('ampDate').value = now.toISOString().split('T')[0];
+        document.getElementById('ampValidity').value = '15 días naturales';
+        document.getElementById('ampValidityLabel').textContent = '15 días naturales';
+        document.getElementById('ivaType').selectedIndex = 0;
+
+        for (let i = 0; i < 4; i++) { removeImage(new Event('click'), i); }
+
+        // Rebuild original budget
+        document.getElementById('origBudgetBody').innerHTML = '';
+        origLineCount = 0;
+        addOrigLine({ concept: 'Diagnóstico y revisión del equipo', type: 'diagnostico', qty: 1, price: 35.00 });
+        addOrigLine({ concept: 'Mano de obra - Reparación', type: 'mano_obra', qty: 1, price: 45.00 });
+        addOrigLine({ concept: 'Formateo e instalación de S.O.', type: 'mano_obra', qty: 1, price: 30.00 });
+
+        // Rebuild amp budget
+        document.getElementById('ampBudgetBody').innerHTML = '';
+        ampLineCount = 0;
+        addAmpLine({ concept: 'Reemplazo de disco duro defectuoso (SSD 500GB)', type: 'pieza', qty: 1, price: 65.00 });
+        addAmpLine({ concept: 'Instalación y configuración del nuevo disco', type: 'mano_obra', qty: 1, price: 40.00 });
+        addAmpLine({ concept: 'Recuperación de datos del disco anterior', type: 'mano_obra', qty: 1, price: 55.00 });
+
+        // Rebuild justifications
+        document.getElementById('justificationContainer').innerHTML = '';
+        justCount = 0;
+        addJustification({ title: 'Disco duro defectuoso detectado durante reparación', detail: 'Durante el proceso de reparación se ha detectado que el disco duro original presenta sectores dañados y errores de lectura, lo que hace necesario su reemplazo para garantizar el correcto funcionamiento del equipo.' });
+        addJustification({ title: 'Recuperación de datos del cliente', detail: 'Al reemplazar el disco duro, es necesario realizar un proceso de recuperación de datos del disco anterior para transferir los archivos del cliente al nuevo dispositivo, evitando la pérdida de información.' });
+
+        clearAllSignatures();
+
+        const newNum = 'AMP-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+        document.getElementById('ampNum').textContent = newNum;
+    }
+
+    // ====== PDF ======
+    async function generatePDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('active');
+
+        const footerActions = document.getElementById('footerActions');
+        footerActions.style.display = 'none';
+        document.querySelectorAll('.clear-sig-btn, .remove-btn, .remove-line-btn, .remove-just-btn, .add-line-btn, .add-just-btn').forEach(btn => btn.style.display = 'none');
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const element = document.getElementById('documentContainer');
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const { jsPDF } = window.jspdf;
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position -= pageHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const cn = document.getElementById('clientName').value || 'Cliente';
+            pdf.save(`MicroInfo_Ampliacion_${cn.replace(/\s+/g, '_')}_${ampNumStr}.pdf`);
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            alert('Error al generar el PDF. Inténtelo de nuevo.');
+        } finally {
+            footerActions.style.display = 'flex';
+            document.querySelectorAll('.clear-sig-btn, .remove-btn, .remove-line-btn, .remove-just-btn, .add-line-btn, .add-just-btn').forEach(btn => btn.style.display = '');
+            overlay.classList.remove('active');
+        }
+    }
+
+    // Initial calculation
+    setTimeout(() => recalcAll(), 100);
+</script>
+</body>
+</html>
+

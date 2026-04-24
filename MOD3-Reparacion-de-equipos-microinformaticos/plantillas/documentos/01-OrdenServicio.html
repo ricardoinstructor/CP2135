@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroInfo - Recepción de Equipo Informático</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e8f0fe;
+            color: #1a2332;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(30, 78, 160, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a4789 0%, #2563a8 50%, #3b82c4 100%);
+            color: white;
+            padding: 28px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 13px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .header-right strong {
+            display: block;
+            font-size: 15px;
+            opacity: 1;
+        }
+
+        .document-title {
+            text-align: center;
+            padding: 18px 36px;
+            background: #f0f5fc;
+            border-bottom: 2px solid #d4e2f7;
+        }
+
+        .document-title h2 {
+            font-size: 20px;
+            color: #1a4789;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .form-body {
+            padding: 30px 36px 40px;
+        }
+
+        .section {
+            margin-bottom: 26px;
+            border: 1.5px solid #c8daf0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #1e4d92, #2a6bc4);
+            color: white;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .section-header .icon {
+            font-size: 16px;
+        }
+
+        .section-body {
+            padding: 18px;
+            background: #fafcff;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.full-width {
+            flex: 100%;
+        }
+
+        .form-group.half-width {
+            flex: 0 0 calc(50% - 8px);
+        }
+
+        .form-group.third-width {
+            flex: 0 0 calc(33.333% - 11px);
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3a5a8c;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #c8daf0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1a2332;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2563a8;
+            box-shadow: 0 0 0 3px rgba(37, 99, 168, 0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .images-section .section-body {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .image-slot {
+            width: 190px;
+            height: 150px;
+            border: 2px dashed #b0c8e8;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f5f8fc;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-slot:hover {
+            border-color: #2563a8;
+            background: #edf3fc;
+        }
+
+        .image-slot.has-image {
+            border-style: solid;
+            border-color: #2563a8;
+            background: #fff;
+        }
+
+        .image-slot .placeholder-icon {
+            font-size: 32px;
+            color: #8baad4;
+            margin-bottom: 4px;
+        }
+
+        .image-slot .placeholder-text {
+            font-size: 11px;
+            color: #8baad4;
+            text-align: center;
+            padding: 0 8px;
+        }
+
+        .image-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .image-slot .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        .image-slot .remove-btn:hover {
+            background: rgba(185, 28, 28, 1);
+        }
+
+        .signatures-row {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .signature-box {
+            flex: 1;
+        }
+
+        .signature-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3a5a8c;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signature-canvas-wrapper {
+            border: 1.5px solid #c8daf0;
+            border-radius: 8px;
+            background: white;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        .signature-canvas-wrapper canvas {
+            display: block;
+            width: 100%;
+            height: 120px;
+        }
+
+        .clear-sig-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(220, 38, 38, 0.85);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            z-index: 1;
+        }
+
+        .clear-sig-btn:hover {
+            background: rgba(185, 28, 28, 1);
+        }
+
+        .footer-actions {
+            padding: 20px 36px 30px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a4789, #2563a8);
+            color: white;
+            box-shadow: 0 3px 12px rgba(26, 71, 137, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(26, 71, 137, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a4789;
+            border: 1.5px solid #1a4789;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f5fc;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            box-shadow: 0 3px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(220, 38, 38, 0.35);
+        }
+
+        .receipt-number {
+            display: inline-block;
+            background: #e8f0fe;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1a4789;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+                padding: 20px;
+            }
+
+            .header-right {
+                text-align: center;
+            }
+
+            .form-body {
+                padding: 20px 16px 30px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-group,
+            .form-group.half-width,
+            .form-group.third-width {
+                min-width: 100%;
+                flex: 100%;
+            }
+
+            .signatures-row {
+                flex-direction: column;
+            }
+
+            .image-slot {
+                width: calc(50% - 10px);
+            }
+
+            .footer-actions {
+                padding: 16px;
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .footer-actions {
+                display: none;
+            }
+
+            .clear-sig-btn,
+            .remove-btn {
+                display: none;
+            }
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 71, 137, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Generando PDF...</div>
+</div>
+
+<div class="container" id="documentContainer">
+    <div class="header">
+        <div class="header-left">
+            <h1>⚙ MicroInfo</h1>
+            <p>Calle de los electrones 77, 28033 Madrid</p>
+            <p>CIF: 541234156</p>
+        </div>
+        <div class="header-right">
+            <strong>Albarán de Recepción</strong>
+            <span>Fecha: <span id="headerDate"></span></span><br>
+            <span>Nº Recepción: <span id="receiptNum" class="receipt-number"></span></span>
+        </div>
+    </div>
+
+    <div class="document-title">
+        <h2>📋 Acta de Recepción de Equipo Informático</h2>
+    </div>
+
+    <div class="form-body">
+        <!-- Datos del Cliente -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">👤</span> Datos del Cliente
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Nombre / Razón Social</label>
+                        <input type="text" id="clientName" value="Comunidad de Madrid Alcobendas" placeholder="Nombre del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="clientPhone" value="+34 612341567" placeholder="Teléfono">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Dirección</label>
+                        <input type="text" id="clientAddress" value="Camino de Alcobendas 118 292 Alcobendas Madrid" placeholder="Dirección completa">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="clientEmail" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>NIF / CIF</label>
+                        <input type="text" id="clientNIF" placeholder="NIF o CIF">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datos de Recepción -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">📅</span> Datos de Recepción
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Técnico de Recepción</label>
+                        <input type="text" id="techName" placeholder="Nombre del técnico">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Entrada</label>
+                        <input type="date" id="entryDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Hora de Entrada</label>
+                        <input type="time" id="entryTime">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datos del Equipo -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">💻</span> Datos del Equipo
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="equipBrand" placeholder="Ej: HP, Dell, Lenovo...">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="equipModel" placeholder="Modelo del equipo">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Serie (S/N)</label>
+                        <input type="text" id="equipSN" placeholder="Número de serie">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Equipo</label>
+                        <select id="equipType">
+                            <option value="">Seleccionar...</option>
+                            <option value="sobremesa">Sobremesa</option>
+                            <option value="portatil">Portátil</option>
+                            <option value="tablet">Tablet</option>
+                            <option value="impresora">Impresora</option>
+                            <option value="servidor">Servidor</option>
+                            <option value="monitor">Monitor</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" id="equipColor" placeholder="Color del equipo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Características Físicas / Estado Exterior</label>
+                        <textarea id="equipFeatures" placeholder="Describir estado físico del equipo, marcas, golpes, rayones, etc."></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Accesorios Entregados</label>
+                        <textarea id="equipAccessories" placeholder="Cargador, cable de alimentación, maletín, ratón, teclado, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Descripción del Problema -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">🔧</span> Descripción del Problema
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Fallo Reportado por el Cliente</label>
+                        <textarea id="problemDesc" placeholder="Describir el problema o fallo reportado por el cliente..." style="min-height: 100px;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">📝</span> Observaciones
+            </div>
+            <div class="section-body">
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Observaciones del Técnico</label>
+                        <textarea id="observations" placeholder="Notas adicionales, condiciones especiales, contraseñas, datos de backup, etc..." style="min-height: 80px;"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Presupuesto Estimado</label>
+                        <input type="text" id="budget" placeholder="€">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Estimada de Entrega</label>
+                        <input type="date" id="estimatedDate">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Imágenes -->
+        <div class="section images-section">
+            <div class="section-header">
+                <span class="icon">📷</span> Imágenes del Equipo
+            </div>
+            <div class="section-body">
+                <div class="image-slot" id="slot0" onclick="triggerUpload(0)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 1</span>
+                </div>
+                <div class="image-slot" id="slot1" onclick="triggerUpload(1)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 2</span>
+                </div>
+                <div class="image-slot" id="slot2" onclick="triggerUpload(2)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 3</span>
+                </div>
+                <div class="image-slot" id="slot3" onclick="triggerUpload(3)">
+                    <span class="placeholder-icon">📷</span>
+                    <span class="placeholder-text">Click para subir imagen 4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firmas -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">✍️</span> Firmas
+            </div>
+            <div class="section-body">
+                <div class="signatures-row">
+                    <div class="signature-box">
+                        <label>Firma del Receptor (Técnico)</label>
+                        <div class="signature-canvas-wrapper">
+                            <button class="clear-sig-btn" onclick="clearSignature('sigReceiver')">✕</button>
+                            <canvas id="sigReceiver"></canvas>
+                        </div>
+                    </div>
+                    <div class="signature-box">
+                        <label>Firma del Cliente</label>
+                        <div class="signature-canvas-wrapper">
+                            <button class="clear-sig-btn" onclick="clearSignature('sigClient')">✕</button>
+                            <canvas id="sigClient"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>Nombre del Firmante (Técnico)</label>
+                        <input type="text" id="receiverName" placeholder="Nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Firmante (Cliente)</label>
+                        <input type="text" id="clientSignerName" placeholder="Nombre completo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions" id="footerActions">
+        <button class="btn btn-primary" onclick="generatePDF()">
+            <span>📄</span> Generar PDF
+        </button>
+        <button class="btn btn-secondary" onclick="resetForm()">
+            <span>🔄</span> Nuevo Formulario
+        </button>
+        <button class="btn btn-danger" onclick="clearAllSignatures()">
+            <span>🗑️</span> Limpiar Firmas
+        </button>
+    </div>
+</div>
+
+<input type="file" id="fileInput0" class="hidden-input" accept="image/*" onchange="handleImage(event, 0)">
+<input type="file" id="fileInput1" class="hidden-input" accept="image/*" onchange="handleImage(event, 1)">
+<input type="file" id="fileInput2" class="hidden-input" accept="image/*" onchange="handleImage(event, 2)">
+<input type="file" id="fileInput3" class="hidden-input" accept="image/*" onchange="handleImage(event, 3)">
+
+<script>
+    // Set current date
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    document.getElementById('headerDate').textContent = dateStr;
+    document.getElementById('entryDate').value = now.toISOString().split('T')[0];
+
+    // Generate receipt number
+    const receiptStr = 'REC-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('receiptNum').textContent = receiptStr;
+
+    // Image handling
+    const imageSlots = [null, null, null, null];
+
+    function triggerUpload(index) {
+        document.getElementById('fileInput' + index).click();
+    }
+
+    function handleImage(event, index) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const slot = document.getElementById('slot' + index);
+            slot.innerHTML = `
+                <img src="${e.target.result}" alt="Imagen ${index + 1}">
+                <button class="remove-btn" onclick="removeImage(event, ${index})">✕</button>
+            `;
+            slot.classList.add('has-image');
+            imageSlots[index] = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeImage(event, index) {
+        event.stopPropagation();
+        const slot = document.getElementById('slot' + index);
+        slot.innerHTML = `
+            <span class="placeholder-icon">📷</span>
+            <span class="placeholder-text">Click para subir imagen ${index + 1}</span>
+        `;
+        slot.classList.remove('has-image');
+        imageSlots[index] = null;
+        document.getElementById('fileInput' + index).value = '';
+    }
+
+    // Signature canvases
+    function initSignatureCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function resizeCanvas() {
+            const wrapper = canvas.parentElement;
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            const tempImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            canvas.width = rect.width * dpr;
+            canvas.height = 120 * dpr;
+            canvas.style.height = '120px';
+
+            ctx.scale(dpr, dpr);
+            ctx.strokeStyle = '#1a4789';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Restore
+            ctx.putImageData(tempImg, 0, 0);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', () => resizeCanvas());
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDraw(e) {
+            e.preventDefault();
+            drawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDraw() {
+            drawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseleave', stopDraw);
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDraw);
+    }
+
+    initSignatureCanvas('sigReceiver');
+    initSignatureCanvas('sigClient');
+
+    function clearSignature(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function clearAllSignatures() {
+        clearSignature('sigReceiver');
+        clearSignature('sigClient');
+        document.getElementById('receiverName').value = '';
+        document.getElementById('clientSignerName').value = '';
+    }
+
+    function resetForm() {
+        if (!confirm('¿Está seguro de que desea limpiar todo el formulario?')) return;
+
+        const inputs = document.querySelectorAll('input:not([type="file"]), textarea, select');
+        inputs.forEach(el => {
+            if (el.type === 'date' || el.type === 'time') {
+                // Reset to defaults
+            } else if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0;
+            } else {
+                el.value = '';
+            }
+        });
+
+        // Reset defaults
+        document.getElementById('clientName').value = 'Comunidad de Madrid Alcobendas';
+        document.getElementById('clientPhone').value = '+34 612341567';
+        document.getElementById('clientAddress').value = 'Camino de Alcobendas 118 292 Alcobendas Madrid';
+        document.getElementById('entryDate').value = now.toISOString().split('T')[0];
+
+        // Clear images
+        for (let i = 0; i < 4; i++) {
+            removeImage(new Event('click'), i);
+        }
+
+        clearAllSignatures();
+
+        const newReceipt = 'REC-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+        document.getElementById('receiptNum').textContent = newReceipt;
+    }
+
+    async function generatePDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('active');
+
+        // Hide action buttons and remove buttons for PDF
+        const footerActions = document.getElementById('footerActions');
+        footerActions.style.display = 'none';
+
+        document.querySelectorAll('.clear-sig-btn').forEach(btn => btn.style.display = 'none');
+        document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = 'none');
+
+        // Set time
+        if (!document.getElementById('entryTime').value) {
+            const timeNow = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('entryTime').value = timeNow;
+        }
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const element = document.getElementById('documentContainer');
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const { jsPDF } = window.jspdf;
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = 297; // A4 height in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = position - pageHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const clientName = document.getElementById('clientName').value || 'Cliente';
+            pdf.save(`MicroInfo_Recepcion_${clientName.replace(/\s+/g, '_')}_${receiptStr}.pdf`);
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            alert('Error al generar el PDF. Inténtelo de nuevo.');
+        } finally {
+            footerActions.style.display = 'flex';
+            document.querySelectorAll('.clear-sig-btn').forEach(btn => btn.style.display = '');
+            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = '');
+            overlay.classList.remove('active');
+        }
+    }
+</script>
+</body>
+</html>
+
+
